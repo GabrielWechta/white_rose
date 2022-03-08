@@ -1,0 +1,26 @@
+
+
+Developer tools
+4. get output from json webgoat.customjs.phoneHome() in the JS console.
+6. open Dev tools -> click "Go!" button and check payload of the latest 'network' packet.
+
+CIA Triad
+5. choose proper answers from the checkboxes.
+
+Crypto
+2. 
+$ echo -n Z2FicmllbDpzZWNyZXQ= | base64 -d 
+	returns "gabriel:secret"
+
+3. 
+{xor}Oz4rPj0+LDovPiwsKDAtOw== decoded returned databasepassword
+The hash is than base64 decoded and each character is XORred against an underscore (ASCII 95).
+good read: https://strelitzia.net/wp/blog/2011/05/17/decoding-websphere-passwords/
+
+4. 
+I guessed it is MD5 :) :
+MD5("admin") = 21232f297a57a5a743894a0e4a801fc3
+
+For the second part I used https://hashtoolkit.com/ and found matching hash for sha256:
+sha_256("123456") = 8D969EEF6ECAD3C29A3A629280E686CF0C3F5D5A86AFF3CA12020C923ADC6C92 
+
