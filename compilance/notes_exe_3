@@ -1,0 +1,13 @@
+Security Operating Centers 
+SOC will assign analysts to three tiers 
+Tier1: the least demanding jobs will encounter most false-positives
+Tier2: Incident Repsodner
+Tier3: soc manager, biggest specialists
+
+CSIRT
+
+SOC procedure
+1. Triage
+2. Analysis
+3. Repsonse and recovery
+4. Lessons learned

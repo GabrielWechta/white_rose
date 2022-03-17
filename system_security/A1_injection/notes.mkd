@@ -18,3 +18,32 @@
     returns: User tom' AND '1'='2 created, please proceed to the login page.
 
    what means that register form changes output based on bool value returned by query.
+   We will use script inject_script.py which sends 'tom\' AND substring(password,{password_index + 1},1)=\'{alphabet[alphabet_index]}' in put method to register field
+6.
+    1.4
+    2.3
+    3.2
+    4.3
+    5.3
+    6.4
+
+# SQL Injection (Mitigation)
+5.
+    getConnection
+        PreparedStatement statement
+    prepareStatement
+    ?
+    ?
+    statement.setString(1, pName)
+    statement.setString(2, pMail)
+
+6.
+try {
+    Connection conn = DriverManager.getConnection(DBURL, DBUSER, DBPW);
+    String query = "SELECT first_name, last_name, FROM users WHERE acct_id = ?";
+    PreparedStatement statement = conn.prepareStatement(query);
+    statement.setString(1, "sdsd");
+    ResultSet results = statement.executeQuery();
+} catch (Exception e) {
+    System.out.println("Oops. Something went wrong!");
+}
