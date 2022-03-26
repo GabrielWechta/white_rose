@@ -29,7 +29,7 @@ def f(x, a, b, p, q, g, y):
 def pollard_rho(g, y, p, Alpha=0, Beta=0, q=None):
     if g == y: return 1
 
-    T = pow(g, Alpha, p) * pow(y, Beta, p)
+    T = pow(g, Alpha, p) * pow(y, Beta, p) % p
     if q is None:  # if q is not passed, order is calculated via order func
         q = order(g, p)
 
@@ -74,12 +74,19 @@ def initialize_dlp(n):
     return p_dash, p, g_dash, g
 
 
+# if __name__ == "__main__":
+#     for i in range(2, 40):
+#         print(i)
+#         p_dash, p, g_dash, g = initialize_dlp(i)
+#         x_to_solve = random.randint(2, p_dash)
+#         y = pow(g_dash, x_to_solve, p)
+#         x = pollard_rho(g=g_dash, y=y, p=p, q=p_dash)
+#         print(f"{x_to_solve=}, {x=}, {g_dash=}, {y=}, {p=}, g^x = {pow(g_dash, x, p)}")
+#         print()
+
 if __name__ == "__main__":
-    for i in range(2, 40):
-        print(i)
-        p_dash, p, g_dash, g = initialize_dlp(i)
-        x_to_solve = random.randint(2, p_dash)
-        y = pow(g_dash, x_to_solve, p)
-        x = pollard_rho(g=g_dash, y=y, p=p)
-        print(f"{x_to_solve=}, {x=}, {g_dash=}, {y=}, {p=}, g^x = {pow(g_dash, x, p)}")
-        print()
+    p_dash, p, g_dash, g = initialize_dlp(60)
+    x_to_solve = random.randint(2, p_dash)
+    y = pow(g_dash, x_to_solve, p)
+    x = pollard_rho(g=g_dash, y=y, p=p, q=p_dash)
+    print(f"{x_to_solve=}, {x=}, {g_dash=}, {y=}, {p=}, g^x = {pow(g_dash, x, p)}")
