@@ -41,9 +41,16 @@ class EllipticCurvePoint:
             return EllipticCurvePoint(x=x_3, y=y_3, p=p, A=A)
 
     def __rmul__(self, other: int):
+        if other == 0:
+            return ZeroAtInfinity()
+
         product = deepcopy(self)
-        for _ in range(other):
-            product = product + self
+        bin_rep = bin(other)[3:]  # cutting '0b1' from value
+        for bit in bin_rep:
+            product = product + product
+            if bit == '1':
+                product = product + self
+
         return product
 
     def show(self, name=""):
