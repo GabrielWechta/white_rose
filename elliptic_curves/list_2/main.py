@@ -1,10 +1,8 @@
 import math
-import pstats
 import random
 
 from EllipticCurve import EllipticCurvePoint
 from ec_prime_order import generateDomainParameters
-import cProfile
 
 
 def f(R, a_scal, b_scal, P, Q, k_ord):
@@ -25,10 +23,11 @@ def f(R, a_scal, b_scal, P, Q, k_ord):
 
 
 def pollard_rho(P, Q, curve_order, Alpha=1, Beta=0):
-    if P == Q: return 1, 0
-    T = Alpha * P
-
     i = 0
+    if P == Q:
+        return 1, i
+
+    T = Alpha * P
     H, Gamma, Zeta = T, Alpha, Beta
     while True:
         i += 1
@@ -56,7 +55,7 @@ def initialize_dlp_for_ec(bit_length: int):
 
 
 if __name__ == "__main__":
-    A_coefficient, B_coefficient, field_size, curve_order, base_point = initialize_dlp_for_ec(33)
+    A_coefficient, B_coefficient, field_size, curve_order, base_point = initialize_dlp_for_ec(40)
     k_to_guess = random.randint(2, curve_order - 1)
     P_point = EllipticCurvePoint(x=base_point[0], y=base_point[1], p=field_size, A=A_coefficient)
     Q_point = k_to_guess * P_point

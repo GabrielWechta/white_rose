@@ -33,18 +33,20 @@ def pollard_rho(g, y, p, Alpha=0, Beta=0, q=None):
     if q is None:  # if q is not passed, order is calculated via order func
         q = order(g, p)
 
+    i = 0
     # initializing constant values for Pollard Rho Algorithm
     H, Gamma, Zeta = T, Alpha, Beta
     while True:
         T, Alpha, Beta = f(T, Alpha, Beta, p, q, g, y)
         H, Gamma, Zeta = f(*f(H, Gamma, Zeta, p, q, g, y), p, q, g, y)
+        i += 1
         # print(f"{T=}, {Alpha=}, {Beta=}")
         # print(f"{H=}, {Gamma=}, {Zeta=}")
         # print()
         if T % p == H % p:
             if Zeta % q != Beta % q:
                 x = (Alpha - Gamma) * pow(Zeta - Beta, -1, q) % q
-                return x
+                return x, i
             else:
                 print("Change Alpha and Beta")
                 return
@@ -85,8 +87,8 @@ def initialize_dlp(n):
 #         print()
 
 if __name__ == "__main__":
-    p_dash, p, g_dash, g = initialize_dlp(60)
+    p_dash, p, g_dash, g = initialize_dlp(30)
     x_to_solve = random.randint(2, p_dash)
     y = pow(g_dash, x_to_solve, p)
-    x = pollard_rho(g=g_dash, y=y, p=p, q=p_dash)
-    print(f"{x_to_solve=}, {x=}, {g_dash=}, {y=}, {p=}, g^x = {pow(g_dash, x, p)}")
+    x, iter_num = pollard_rho(g=g_dash, y=y, p=p, q=p_dash)
+    print(f"{x_to_solve=}, {x=}, {g_dash=}, {y=}, {p=}, g^x = {pow(g_dash, x, p)}, {iter_num=}")

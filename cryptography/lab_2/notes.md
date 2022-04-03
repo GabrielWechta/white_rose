@@ -13,6 +13,7 @@ $Vrfy(pubK,m,s) = h(m) == s^e mod N)$
 Normal flow:
 
 `A-Alice, S-Signer, V-Verifier`
+
 A(pubK), S(privK), V(pubK)
 
 1. A -m-> S
@@ -27,6 +28,7 @@ Blind RSA Signature (D. Charm):
 Normal flow:
 
 `A-Alice, S-Signer, V-Verifier`
+
 A(pubK), S(privK), V(pubK)
 1. A generates $r$
 2. A calculates $q = h(m) \cdot r^e mod N$ 
@@ -37,11 +39,11 @@ A(pubK), S(privK), V(pubK)
 
 it holds:
 
-$s = t \cdot r^{-1} mod N = $
+$s = t \cdot r^{-1} mod N =$
 
-$q^d \cdot r^{-1} mod N = $
+$q^d \cdot r^{-1} mod N =$
 
-$(h(m)\cdot r^e)^d \cdot r^{-1} mod N = $
+$(h(m)\cdot r^e)^d \cdot r^{-1} mod N =$
 
 $h(m)^d \cdot r^{ed} \cdot r^{-1} mod N = h(m)^d mod N$
 
