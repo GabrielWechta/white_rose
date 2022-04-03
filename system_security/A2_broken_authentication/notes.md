@@ -51,4 +51,10 @@ copy "encoded" field.
 open page 10 while in burp's browser
 go to http history
 find http://localhost:8080/WebGoat/JWT/refresh/login
-
+find:
+{"user":"Jerry","password":"bm5nhSkxCXZkKRy4"}
+and
+{
+  "access_token" : "eyJhbGciOiJIUzUxMiJ9.eyJhZG1pbiI6ImZhbHNlIiwidXNlciI6IkplcnJ5In0.Z-ZX2L0Tuub0LEyj9NmyVADu7tK40gL9h1EJeRg1DDa6z5_H-SrexH1MYHoIxRyApnOP7NfFonP3rOw1Y5qi0A",
+  "refresh_token" : "vojbCZRRdMKjdIaAifZY"
+}
