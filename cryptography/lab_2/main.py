@@ -32,7 +32,7 @@ def task_3():
 
     r = rsa.get_random_element()
     c = rsa.enc(m * r)
-    m_r, reductions = rsa.blind_dec(c)
+    m_r, _ = rsa.blind_dec(c)
     x = m_r * pow(r, -1, rsa.N) % rsa.N
     print(x == m)
 

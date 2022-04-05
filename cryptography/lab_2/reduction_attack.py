@@ -14,6 +14,7 @@ def get_reductions_for_set(rsa, c_set, blind=False):
             rand = rsa.get_random_element()
             c_blinded = c * rand % rsa.N
             _, r = rsa.dec(c_blinded)
+            # _, r_2 = rsa.dec(c)
             reductions += r
 
     return reductions
@@ -26,14 +27,17 @@ def generate_reduction_sets(rsa, bit, samples_num):
 
     N, e = rsa.get_public_key()
 
-    power = rsa.power_at_bit(bit)
+    next_power = rsa.power_at_bit(bit)
     if bit < 2:
         prev_power = 2
     else:
         prev_power = rsa.power_at_bit(bit - 1)
 
-    left_border_value = int(Decimal(N) ** Decimal(1 / power))
-    right_border_value = int(Decimal(N) ** Decimal(1 / prev_power))
+    N_dec = Decimal(N)
+    next_power_inv_dec = Decimal(1 / next_power)
+    prev_power_inv_dec = Decimal(1 / prev_power)
+    left_border_value = int(pow(N_dec, next_power_inv_dec))
+    right_border_value = int(pow(N_dec, prev_power_inv_dec))
 
     if 2 >= left_border_value or left_border_value >= right_border_value:
         return [], [], left_border_value, right_border_value
@@ -91,7 +95,7 @@ if __name__ == "__main__":
     for _ in range(10):
         print("Getting RSA object")
         rsa = RSA(128)
-        accuracy = reduction_attack(rsa, 7500, 6)
+        accuracy = reduction_attack(rsa, 1000, 6)
         accuracies.append(accuracy)
 
     print(f"Reduction accuracy: {(sum(accuracies) / len(accuracies)) * 100}%")

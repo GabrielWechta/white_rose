@@ -132,6 +132,6 @@ class RSA:
             if i != len(d_bin) - 1:
                 print(", ", end="")
 
-        print(f"] -> {(correct / len(d_bin)) * 100}%")
+        print(f"] : {(correct / len(d_bin)) * 100}%")
 
         return correct / len(d_bin)
