@@ -13,8 +13,6 @@ def get_reductions_for_set(rsa, c_set, blind=False):
             reductions += r
         else:
             rand = rsa.get_random_element()
-            print(f"{rand=}")
-            # rand = 3
             c_blinded = (c * rand) % rsa.N
             _, r_r = rsa.dec(c_blinded)
             reductions += r_r
