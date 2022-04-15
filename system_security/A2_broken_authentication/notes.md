@@ -19,7 +19,7 @@
 		"user" : "Tom"
 		}
 
-### 5
+### 7
 http://javadox.com/io.jsonwebtoken/jjwt/0.4/io/jsonwebtoken/JwtParser.html#parseClaimsJws-java.lang.String-
 http://javadox.com/io.jsonwebtoken/jjwt/0.4/io/jsonwebtoken/JwtParser.html#parse-java.lang.String-
 
@@ -121,6 +121,8 @@ So we need to put something like as 'kid':
 ' UNION SELECT 'bmV3X2tleQ==' FROM jwt_keys; --
 
 and produce jwt in jwt.io, also verify signature with:
+! remeber to change names from jerry to tom in jwt.io
+
 HMACSHA256(
   base64UrlEncode(header) + "." +
   base64UrlEncode(payload),
