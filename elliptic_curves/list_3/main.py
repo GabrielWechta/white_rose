@@ -14,7 +14,7 @@ def initialize_problem(s_exponent: int, t: int):
         if sympy.isprime(p):
             p_binary = "{0:b}".format(p)
             print(f"It took: {iter_count} iter, to generate prime {p=},\t{p_binary}")
-            return p
+            return p, s
 
 
 def initialize_quadratic_residue(p: int):
@@ -30,7 +30,7 @@ def initialize_quadratic_residue(p: int):
 def find_quadratic_non_residue(p: int):
     iter_count = 0
     a = random.randint(1, p - 1)
-    while pow(a, (p - 1) // 2, p) == 1 % p:
+    while is_quadratic_residue(a, p):
         iter_count += 1
         a = random.randint(1, p - 1)
 
@@ -39,10 +39,57 @@ def find_quadratic_non_residue(p: int):
     return a
 
 
+def is_quadratic_residue(n: int, p: int):
+    if n % p == 0 or pow(n, (p - 1) // 2, p) == 1:
+        return True
+    else:
+        return False
+
+
+def find_i_squaring(t: int, p: int):
+    i = 0
+    t_temp = t
+    while t_temp != 1:
+        i += 1
+        t_temp = pow(t_temp, 2, p)
+
+    return i
+
+
+def tonelli_shanks(n: int, S: int, Q: int, z: int, p: int):
+    if p % 4 == 3:
+        return pow(n, (p + 1) // 4, p)
+
+    M = S
+    c = pow(z, Q, p)
+    t = pow(n, Q, p)
+    R = pow(n, (Q + 1) // 2, p)
+
+    while True:
+        if t == 0:
+            return 0
+        if t == 1:
+            return R
+
+        i = find_i_squaring(t=t, p=p)
+
+        b = pow(c, pow(2, M - i - 1), p)
+        M = i
+        c = pow(b, 2, p)
+        t = (t * c) % p
+        R = (R * b) % p
+
+
 def main():
-    p = initialize_problem(s_exponent=99, t=150)
+    S = 150
+    p, Q, = initialize_problem(s_exponent=99, t=S)
     r_to_guess, n = initialize_quadratic_residue(p=p)
-    a = find_quadratic_non_residue(p=p)
+    z = find_quadratic_non_residue(p=p)
+    r = tonelli_shanks(n=n, p=p, Q=Q, S=S, z=z)
+    print("Solution:")
+    print(f"{r=}")
+    print(f"{n=}")
+    print(f"x={(r ** 2) % p}")
 
 
 if __name__ == "__main__":
