@@ -11,6 +11,7 @@ The rationale is: that instead of excluding people from the labour market, it is
 It is also important to notice what benefits to society shorter working hours will bring, mainly improving mental health and wellbeing. People will have more time. If someone can have satisfactory life with a 4-day per week income, he has one extra day for spending time the way he likes.
 
 Yes, shorter working hours will cause a drop in unemployment.
+
 # 5 Production automation will in the long term cause huge unemployment. Do you agree?
 I feel like every few decades, predictions about the “end of work” are popping up and they’ve always been wrong. There was a spike in automation anxiety in the late 1920s and ‘30s when machines were starting to take over jobs on farms and in factories. Current evidence indicates that while in the short term technology often does displace jobs, it also creates many new jobs long-term, for example:
 - design and maintain the technology
