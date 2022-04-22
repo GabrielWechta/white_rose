@@ -8,7 +8,7 @@ DP states that when fully operational these measures are estimated to get 750,00
 
 The rationale is: that instead of excluding people from the labour market, it is better to share out the working day. This would avoid peaks in overtime on the one hand and a lack of jobs on the other.
 
-It is also important to notice what benefits to society shorter working hours will bring, mainly improving mental health and wellbeing. People will have more time. If someone can have satisfactory life with a 4-day per week income, he has one extra day for spending time the way he likes.
+It is also important to notice what benefits to society shorter working hours will bring, mainly improving **mental health** and wellbeing. People will have more time. If someone can have satisfactory life with a 4-day per week income, he has one extra day for spending time the way he likes.
 
 Yes, shorter working hours will cause a drop in unemployment.
 
