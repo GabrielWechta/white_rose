@@ -4,7 +4,7 @@ from reduction_attack import reduction_attack
 
 def task_1():
     rsa = RSA(bit_length=128)
-    reduction_attack(rsa=rsa, samples_num=10000, bits_num=6)
+    reduction_attack(rsa=rsa, samples_num=10000, bits_num=10)
 
 
 def task_2():
@@ -27,20 +27,21 @@ def task_2():
 
 
 def task_3():
-    rsa = RSA(bit_length=128)
-    m = rsa.get_random_element()
+    rsa = RSA(bit_length=18)
+    # m = rsa.get_random_element()
+    #
+    # r = rsa.get_random_element()
+    # c = rsa.enc(m * r)
+    # m_r, _ = rsa.blind_dec(c)
+    # x = m_r * pow(r, -1, rsa.N) % rsa.N
+    # print(x == m)
 
-    r = rsa.get_random_element()
-    c = rsa.enc(m * r)
-    m_r, _ = rsa.blind_dec(c)
-    x = m_r * pow(r, -1, rsa.N) % rsa.N
-    print(x == m)
-
-    reduction_attack(rsa=rsa, samples_num=1000, bits_num=6, blind=True)
+    reduction_attack(rsa=rsa, samples_num=10000, bits_num=6, blind=True)
 
 
 
 if __name__ == "__main__":
     task_3()
+
 
 

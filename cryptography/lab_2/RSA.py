@@ -44,12 +44,12 @@ class RSA:
             r = random.randrange(2, self.N)
             while math.gcd(r, self.N) != 1:
                 r = random.randrange(2, self.N)
-            return r
         else:
             r = random.randrange(left, right)
             while math.gcd(r, self.N) != 1:
                 r = random.randrange(left, right)
-            return r
+
+        return r
 
     def mod_reduce(self, a):
         reduction = 0
