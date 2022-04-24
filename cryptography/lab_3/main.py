@@ -3,15 +3,25 @@ from responder import Responder
 
 
 def main():
-    n = 15
-    initiator = Initiator(n)
-    responder = Responder(n)
+    n = 24
+    initiator = Initiator(n=n)
+    print(f"Initiator is created, {n=}.")
+    responder = Responder(n=n, num_of_challenges=10)
+    print(f"Responder is created, {n=}.")
     challenges = responder.get_challenges()
-    initiator.put_challenges(challenges)
+    print("Initiator asks for challenges.")
+    print(f"Responder returns {challenges=}.")
+    initiator.set_challenges(challenges)
     initiator.solve_merkel_puzzle()
-    responder.put_challenge_id(initiator.get_challenge_id())
+    print("Initiator solves merkel_puzzle...")
+    key_id = initiator.get_key_id()
+    responder.set_challenge_id(key_id)
+    print(f"Initiator sends {key_id=} to Responder.")
 
-    print(initiator.key_bytes == responder.key_bytes)
+    print(
+        f"Does Initiator and Responder have the same key? "
+        f"{initiator.key_bytes == responder.key_bytes}")
+
 
 if __name__ == "__main__":
     main()
