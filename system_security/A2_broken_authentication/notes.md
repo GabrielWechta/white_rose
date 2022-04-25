@@ -69,7 +69,8 @@ now create request, request must have:
 - Authorization header - Tom’s access token from the given log entries
 - Content-Type header - 'application/json'
 - data in JSON format access and refresh tokens - Jerry’s tokens copied straight from the /login endpoint response
-
+- current JESSIONID
+  
 so for example:
 POST /WebGoat/JWT/refresh/newToken HTTP/1.1
 Host: localhost:8080
@@ -117,6 +118,9 @@ In the code for this lesson.
 ```
 ResultSet rs = connection.createStatement().executeQuery("SELECT key FROM jwt_keys WHERE id = '" + kid + "'");
 ```
+
+base64("new_key") = "bmV3X2tleQ=="
+
 So we need to put something like as 'kid':
 ' UNION SELECT 'bmV3X2tleQ==' FROM jwt_keys; --
 
@@ -168,7 +172,7 @@ answers:
 ### 6
 - via Burp
 - use tom mail in the form 
-- intercept restePassword message
+- intercept resetPassword message
 - change Host header to "localhost:9090"
 - open WebWOlf
 - go to Incoming Requests

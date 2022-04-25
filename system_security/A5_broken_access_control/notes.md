@@ -17,6 +17,9 @@ Intruder - sniper;number
 start from: 2342384
 then intercept View Profile req and paste 2342388
 
+change to PUT, add "Content-Type: application/json":
+{"role":1, "color":"red", "size":"large", "name":"Buffalo Bill", "userId":2342388}
+
 # Missing Function Level Access Control
 ### 2
 Use inspect mode to find
