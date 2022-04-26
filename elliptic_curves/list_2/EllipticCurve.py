@@ -70,8 +70,10 @@ class ZeroAtInfinity(EllipticCurvePoint):
 
 if __name__ == "__main__":
     P_1 = EllipticCurvePoint(x=3, y=1, p=5, A=1)
+    P_1.show("P_1")
     P_2 = EllipticCurvePoint(x=2, y=0, p=5, A=1)
-    P_3 = 2 * (P_1 + P_2)
+    P_2.show("P_2")
+    P_3 = (P_1 + P_2)
     P_3.show("P_3")
     D = ZeroAtInfinity()
     B = P_2 + P_2
