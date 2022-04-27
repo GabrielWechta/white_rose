@@ -27,7 +27,7 @@ def task_2():
 
 
 def task_3():
-    rsa = RSA(bit_length=18)
+    rsa = RSA(bit_length=10)
     # m = rsa.get_random_element()
     #
     # r = rsa.get_random_element()

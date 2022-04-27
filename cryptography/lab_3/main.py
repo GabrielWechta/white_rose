@@ -3,10 +3,11 @@ from responder import Responder
 
 
 def main():
-    n = 24
+    n = 15
     initiator = Initiator(n=n)
     print(f"Initiator is created, {n=}.")
-    responder = Responder(n=n, num_of_challenges=10)
+    responder = Responder(n=n,
+                          num_of_challenges=10)  # num_of_challenges should be 2^n
     print(f"Responder is created, {n=}.")
     challenges = responder.get_challenges()
     print("Initiator asks for challenges.")

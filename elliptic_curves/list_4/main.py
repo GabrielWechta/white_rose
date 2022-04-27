@@ -37,8 +37,8 @@ def pollard_rho(P, Q, curve_order, Alpha=1, Beta=0):
                            curve_order)
         if T == H:
             if math.gcd(Zeta - Beta, curve_order) == 1:
-                k = (Alpha - Gamma) * pow(Zeta - Beta, -1,
-                                          curve_order) % curve_order
+                k = ((Alpha - Gamma) * pow(Zeta - Beta, -1,
+                                          curve_order)) % curve_order
                 return k, i
             else:
                 print("Change Alpha and Beta")
@@ -62,7 +62,7 @@ def initialize_dlp_for_ec(bit_length: int):
 
 if __name__ == "__main__":
     A_coefficient, B_coefficient, field_size, curve_order, base_point = initialize_dlp_for_ec(
-        10)
+        20)
     k_to_guess = random.randint(2, curve_order - 1)
     P_point = ProjectiveEllipticCurvePoint.create(X=base_point[0],
                                                   Y=base_point[1],
@@ -73,6 +73,8 @@ if __name__ == "__main__":
     Q_point.show("Q_point")
     k_solution, iter_num = pollard_rho(P=P_point, Q=Q_point,
                                        curve_order=curve_order)
+    Q_test = k_solution * P_point
+    Q_test.show("Q_test")
     print(
         f"P({P_point.X}: {P_point.Y}: {P_point.Z}), {k_to_guess=}, "
         f"Q({Q_point.X}: {Q_point.Y}: {Q_point.Z}), {k_solution=}, {iter_num=}")

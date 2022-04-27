@@ -1,4 +1,5 @@
 import random
+import time
 
 from Crypto.Cipher import AES
 
@@ -24,6 +25,7 @@ class Initiator:
         self.brute_force(ciphertext, tag)
 
     def brute_force(self, ciphertext, tag):
+        start = time.time()
         counter = 0
         for weak_key in range(self.max_weak_key):
             weak_key_bytes = weak_key.to_bytes(32, 'big')
@@ -35,7 +37,8 @@ class Initiator:
                 key_id_bytes = plaintext[:32]
                 key_bytes = plaintext[32:]
                 self.id_bytes, self.key_bytes = key_id_bytes, key_bytes
-                print(f"It took {counter} tries to guess weak_key.")
+                print(
+                    f"It took {counter} tries and {time.time() - start}s to guess weak_key.")
                 return
             except ValueError:
                 counter += 1
