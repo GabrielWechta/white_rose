@@ -7,11 +7,11 @@ from ec_prime_order import generateDomainParameters
 
 def f(R, a_scal, b_scal, P, Q, k_ord):
     # R.show()
-    if R.X % 3 == 1:
+    if R.X * R.Z % 3 == 1:
         R_new = R + P
         a_new = (a_scal + 1) % k_ord
         b_new = b_scal
-    elif R.X % 3 == 2:
+    elif R.X * R.Z % 3 == 2:
         R_new = 2 * R
         a_new = 2 * a_scal % k_ord
         b_new = 2 * b_scal % k_ord
@@ -62,7 +62,7 @@ def initialize_dlp_for_ec(bit_length: int):
 
 if __name__ == "__main__":
     A_coefficient, B_coefficient, field_size, curve_order, base_point = initialize_dlp_for_ec(
-        20)
+        10)
     k_to_guess = random.randint(2, curve_order - 1)
     P_point = ProjectiveEllipticCurvePoint.create(X=base_point[0],
                                                   Y=base_point[1],

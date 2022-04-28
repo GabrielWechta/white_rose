@@ -30,8 +30,8 @@ class ProjectiveEllipticCurvePoint:
         else:
             return (self.X * self.Z) % self.p == (
                     other.X * other.Z) % self.p and (
-                               self.Y * self.Z) % self.p == (
-                               other.Y * other.Z) % self.p
+                           self.Y * self.Z) % self.p == (
+                           other.Y * other.Z) % self.p
 
     def __add__(self, other: 'ProjectiveEllipticCurvePoint'):
         if isinstance(self, ProjectiveZeroAtInfinity):
@@ -117,3 +117,8 @@ if __name__ == "__main__":
     P_1_2.show("P_1_2")
     P_1_2_Z = P_1_2 + Z
     P_1_2_Z.show("P_1_2_Z")
+
+    P = ProjectiveEllipticCurvePoint.create(X=3, Y=2, Z=1, p=5, A=1)
+    Q = ProjectiveEllipticCurvePoint.create(X=1, Y=3, Z=2, p=5, A=1)
+    assert 2 * P + 3 * P == 2 * 2 * P + 1
+    assert 2 * P + 2 * Q == 2 * (P + Q)
