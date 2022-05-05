@@ -28,10 +28,10 @@ class ProjectiveEllipticCurvePoint:
             return isinstance(self, ProjectiveZeroAtInfinity) and \
                    isinstance(other, ProjectiveZeroAtInfinity)
         else:
-            return (self.X * self.Z) % self.p == (
-                    other.X * other.Z) % self.p and (
-                           self.Y * self.Z) % self.p == (
-                           other.Y * other.Z) % self.p
+            return (self.X * other.Z) % self.p == (
+                    other.X * self.Z) % self.p and (
+                           self.Y * other.Z) % self.p == (
+                           other.Y * self.Z) % self.p
 
     def __add__(self, other: 'ProjectiveEllipticCurvePoint'):
         if isinstance(self, ProjectiveZeroAtInfinity):
@@ -60,8 +60,9 @@ class ProjectiveEllipticCurvePoint:
                 X_3 = (h * S) % p
                 Y_3 = (W * (B - h) - 2 * pow(S * Y_1, 2, p)) % p
                 Z_3 = pow(S, 3, p)
-                return ProjectiveEllipticCurvePoint(X=X_3, Y=Y_3, Z=Z_3, p=p,
-                                                    A=A)
+                return ProjectiveEllipticCurvePoint.create(X=X_3, Y=Y_3, Z=Z_3,
+                                                           p=p,
+                                                           A=A)
             else:
                 return ProjectiveZeroAtInfinity()
 
@@ -74,8 +75,8 @@ class ProjectiveEllipticCurvePoint:
             Y_3 = ((R * (3 * (U_1 + U_2) * pow(P, 2, p) - 2 * W * pow(R, 2, p))
                     - (S_1 + S_2) * pow(P, 3, p)) * pow(2, -1, p)) % p
             Z_3 = (pow(P, 3, p) * W) % p
-            return ProjectiveEllipticCurvePoint(X=X_3, Y=Y_3,
-                                                Z=Z_3, p=p, A=A)
+            return ProjectiveEllipticCurvePoint.create(X=X_3, Y=Y_3,
+                                                       Z=Z_3, p=p, A=A)
 
     def __rmul__(self, other: int):
         if other == 0:
@@ -118,7 +119,20 @@ if __name__ == "__main__":
     P_1_2_Z = P_1_2 + Z
     P_1_2_Z.show("P_1_2_Z")
 
-    P = ProjectiveEllipticCurvePoint.create(X=3, Y=2, Z=1, p=5, A=1)
-    Q = ProjectiveEllipticCurvePoint.create(X=1, Y=3, Z=2, p=5, A=1)
-    assert 2 * P + 3 * P == 2 * 2 * P + 1
-    assert 2 * P + 2 * Q == 2 * (P + Q)
+    P = ProjectiveEllipticCurvePoint.create(X=3, Y=2, Z=1, p=7, A=1)
+    Q = ProjectiveEllipticCurvePoint.create(X=1, Y=3, Z=3, p=7, A=1)
+    assert 2 * P + 2 * P == 4 * P
+    assert P + Q == Q + P
+    assert 2 * P + Q + Q == P + P + Q + Q
+    P_3 = 3 * P
+    Q_3 = 3 * Q
+    assert P_3 == P + P + P
+    assert Q_3 == Q + Q + Q
+
+    assert P_3 + 0 * Q_3 == P_3
+    assert 0 * P_3 + Q_3 == Q_3
+
+    assert 2 * P + Q == Q + 2 * P
+    assert P + 2 * Q == 2 * Q + P
+
+
