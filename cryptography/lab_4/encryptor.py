@@ -1,5 +1,6 @@
 import json
 from base64 import b64encode
+from typing import Union
 
 from Cryptodome.Cipher import AES
 from Crypto.Util.Padding import pad
@@ -19,16 +20,18 @@ class Encryptor:
         iv_bytes = int.to_bytes(iv_int, byteorder='big', length=16)
         self.aes.iv = iv_bytes
 
-    def encrypt(self, message: bytes):
-        print(f"{message=}")
+    def encrypt(self, message: Union[str, bytes]):
+        if isinstance(message, str):
+            message = message.encode()
+        # print(f"{message=}")
         padded = pad(message, AES.block_size)
-        print(f"{padded=}")
+        # print(f"{padded=}")
         encrypted = self.aes.encrypt(padded)
-        print(f"{encrypted=}")
-        print(f"{self.aes.iv=}")
+        # print(f"{encrypted=}")
+        # print(f"{self.aes.iv=}")
         iv = b64encode(self.aes.iv).decode('utf-8')
         ct = b64encode(encrypted).decode('utf-8')
         result = json.dumps({'iv': iv, 'ciphertext': ct})
-        print(result)
+        # print(result)
         self._increment_iv()
-        return encrypted
+        return result

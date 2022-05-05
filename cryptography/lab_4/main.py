@@ -1,8 +1,11 @@
 import argparse
+import pathlib
+from typing import List
 
-import OpenSSL
 from jks import jks
 
+from attacker import Attacker
+from cpa_experiment import CPAExperiment
 from encryptor import Encryptor
 
 
@@ -53,6 +56,13 @@ def _parse_args() -> argparse.Namespace:
         help="Password for keystore.",
     )
 
+    parser.add_argument(
+        "--messages_file_path",
+        dest="messages_file_path",
+        type=str,
+        help="Path to file with messages. Messages should be seperated with \\n",
+    )
+
     return parser.parse_args()
 
 
@@ -68,8 +78,27 @@ def get_privkey_from_keystore(keystore_path: str, key_identifier: str,
 
     privkey = privkey_entry.pkey
     privkey += bytes(1)
-    print(f"{privkey=}")
+    # print(f"{privkey=}")
     return privkey
+
+
+def read_file_to_list(file_path: pathlib.Path) -> List[bytes]:
+    messages = []
+    with open(file_path) as file:
+        while line := file.readline().rstrip():
+            messages.append(line.encode())
+
+    return messages
+
+
+def enc_oracle(encryptor: Encryptor, messages: List[bytes]):
+    for message in messages:
+        print(f"{message} -> {encryptor.encrypt(message)}")
+
+
+def chosen_plaintext_attack(cpa_exp: CPAExperiment, attacker: Attacker):
+    stage_one_messages = attacker.produce_stage_one_messages()
+    stage_one_ciphertext = cpa_exp.conduct_stage_one(stage_one_messages)
 
 
 def main():
@@ -77,15 +106,21 @@ def main():
     mode, bc_mode = args.mode, args.bc_mode
     keystore_path, key_identifier = args.keystore_path, args.key_identifier
     keystore_password = args.keystore_password
+    messages_file_path = pathlib.Path(args.messages_file_path)
 
     privkey = get_privkey_from_keystore(keystore_path=keystore_path,
                                         key_identifier=key_identifier,
                                         keystore_password=keystore_password)
 
-    encryptor = Encryptor(private_key=privkey, bc_mode=bc_mode)
-
     if mode == "enc_oracle":
+        encryptor = Encryptor(private_key=privkey, bc_mode=bc_mode)
+        messages_to_encrypt = read_file_to_list(file_path=messages_file_path)
+        enc_oracle(encryptor=encryptor, messages=messages_to_encrypt)
 
+    if mode == "challenge":
+        attacker = Attacker()
+        cpa_exp = CPAExperiment(privkey=privkey, bc_mode=bc_mode)
+        chosen_plaintext_attack(cpa_exp=cpa_exp, attacker=attacker)
 
 
 if __name__ == "__main__":
