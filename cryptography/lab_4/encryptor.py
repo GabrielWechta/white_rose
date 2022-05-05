@@ -1,37 +1,39 @@
-import json
-from base64 import b64encode
 from typing import Union
 
 from Cryptodome.Cipher import AES
-from Crypto.Util.Padding import pad
 
 
 class Encryptor:
     def __init__(self, private_key: bytes, bc_mode: str):
         self.aes = None
+        self.iv = bytes(16)
+        self.private_key = private_key
         if bc_mode == "CBC":
-            self.aes = AES.new(private_key, AES.MODE_CBC, iv=bytes(16))
+            self.aes = AES.new(self.private_key, AES.MODE_CBC, iv=self.iv)
         if bc_mode == "GCM":
             self.aes = AES.new(private_key, AES.MODE_GCM, nonce=bytes(16))
 
-    def _increment_iv(self):
-        iv_int = int.from_bytes(self.aes.iv, byteorder='big')
+    def _create_encryptor(self):
+        # incrementing iv
+        iv_int = int.from_bytes(self.iv, byteorder='big')
         iv_int += 1
         iv_bytes = int.to_bytes(iv_int, byteorder='big', length=16)
-        self.aes.iv = iv_bytes
+        self.iv = iv_bytes
+
+        # creating new encryptor
+        self.aes = AES.new(self.private_key, AES.MODE_CBC, iv=iv_bytes)
 
     def encrypt(self, message: Union[str, bytes]):
+        self._create_encryptor()
+
         if isinstance(message, str):
             message = message.encode()
+
         # print(f"{message=}")
-        padded = pad(message, AES.block_size)
+        # padded = pad(message, AES.block_size)
         # print(f"{padded=}")
-        encrypted = self.aes.encrypt(padded)
-        # print(f"{encrypted=}")
-        # print(f"{self.aes.iv=}")
-        iv = b64encode(self.aes.iv).decode('utf-8')
-        ct = b64encode(encrypted).decode('utf-8')
-        result = json.dumps({'iv': iv, 'ciphertext': ct})
+        ciphertext = self.aes.encrypt(message)
+        result = {'iv': self.aes.iv,
+                  'ciphertext': ciphertext}
         # print(result)
-        self._increment_iv()
         return result

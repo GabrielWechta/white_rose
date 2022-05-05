@@ -9,7 +9,6 @@ class CPAExperiment:
         self.privkey = privkey
         self.bc_mode = bc_mode
         self.b = None
-        pass
 
     def refresh_encryptor(self):
         self.encryptor = Encryptor(private_key=self.privkey,
@@ -37,7 +36,6 @@ class CPAExperiment:
             result = self.encryptor.encrypt(message)
             query_dict[i] = result
         return query_dict
-
 
     def check_b(self, b_guessed):
         if b_guessed == self.b:
