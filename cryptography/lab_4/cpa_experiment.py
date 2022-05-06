@@ -5,7 +5,8 @@ from encryptor import Encryptor
 
 class CPAExperiment:
     def __init__(self, privkey, bc_mode):
-        self.encryptor = Encryptor(private_key=privkey, bc_mode=bc_mode)
+        self.encryptor = Encryptor(private_key=privkey, bc_mode=bc_mode,
+                                   do_random_iv=False)
         self.privkey = privkey
         self.bc_mode = bc_mode
         self.b = None

@@ -159,11 +159,16 @@ def main():
                                         keystore_password=keystore_password)
 
     if mode == "enc_oracle":
-        encryptor = Encryptor(private_key=privkey, bc_mode=bc_mode)
+        encryptor = Encryptor(private_key=privkey, bc_mode=bc_mode,
+                              do_random_iv=True)
         messages_to_encrypt = read_file_to_list(file_path=messages_file_path)
         enc_oracle(encryptor=encryptor, messages=messages_to_encrypt)
 
     if mode == "challenge":
+        if bc_mode == "GCM":
+            print("This Attacker does not know how to run CPA on AES-GCM.")
+            return
+
         attacker = Attacker()
         cpa_exp = CPAExperiment(privkey=privkey, bc_mode=bc_mode)
         chosen_plaintext_attack(cpa_exp=cpa_exp, attacker=attacker)
