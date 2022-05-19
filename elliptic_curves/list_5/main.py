@@ -1,8 +1,16 @@
+import functools
 import math
 from copy import deepcopy
+from random import randrange
+
+from Crypto.PublicKey import ECC
+from sympy import randprime, isprime
+
+from optimizer import CombMethodOptimizer
+import operator
 
 
-def cutr(string: str, n: int, sups: str = 'x'):
+def cutr(string: str, n: int):
     if n > len(string):
         return "", '' * (n - len(string)) + string
     else:
@@ -12,15 +20,12 @@ def cutr(string: str, n: int, sups: str = 'x'):
 
 
 class CombMethod:
-    def __init__(self, g, e):
-        self.g = g
-        self.e = e
-        # self.e_bin = '11001100101'
-        self.e_bin = format(self.e, 'b')
-        self.l = len(self.e_bin)
+    def __init__(self, a, b, l, S):
+        self.l = l
+        self.S = S
 
-        self.a = 4
-        self.b = 2
+        self.a = a
+        self.b = b
 
         self.h = math.ceil(self.l / self.a)
         self.v = math.ceil(self.a / self.b)
@@ -29,14 +34,10 @@ class CombMethod:
         self.v_last = math.ceil(self.a_last / self.b)
         self.b_last = self.a_last - self.b * (self.v_last - 1)
 
-        self.E = self.create_E_matrix()
-        self.G = self.create_G_matrix()
-
-        self.show_E()
+        self.E = None
+        self.G = None
 
     def describe(self):
-        print(f"{self.g=}")
-        print(f"{self.e_bin=}")
         print(f"{self.l=}")
         print(f"{self.a=}")
         print(f"{self.b=}")
@@ -47,9 +48,9 @@ class CombMethod:
         print(f"{self.b_last=}")
 
     #  E Matrix ##############################################################
-    def create_E_matrix(self):
+    def create_E_matrix(self, e_bin):
         E = [[0 for j in range(self.v)] for i in range(self.h)]
-        e_bin = deepcopy(self.e_bin)
+        e_bin = deepcopy(e_bin)
 
         for i in range(self.h):
             if i != self.h - 1:
@@ -65,7 +66,7 @@ class CombMethod:
 
                 E[i][j] = e_bin_i_j
 
-        return E
+        self.E = E
 
     def show_E(self):
         # print(f"{self.e_bin=}")
@@ -75,37 +76,33 @@ class CombMethod:
             print()
 
     #  G Matrix ##############################################################
-    def get_r_array(self):
-        r_array = [self.g ** (2 ** (i * self.a)) for i in range(self.h)]
+    def precompute(self, g):
+        self.create_G_matrix(g)
+
+    def get_r_array(self, g):
+        r_array = [g * (2 ** (i * self.a)) for i in range(self.h)]
         r_array.reverse()
         return r_array
 
     def matmul(self, l_arr, r_arr):
-        s = 1
-        for l, r in zip(l_arr, r_arr):
-            s *= r ** l
+        return functools.reduce(operator.add,
+                                map(lambda x, y: x * y, l_arr, r_arr))
 
-        return s
+    def create_G_matrix(self, g):
+        r_array = self.get_r_array(g=g)
+        G = [[1 for _ in range(2 ** self.h)] for _ in range(self.v)]
 
-    def create_G_matrix(self):
-        r_array = self.get_r_array()
-        # print(r_array)
-
-        G = [[1 for i in range(2 ** self.h)] for j in range(self.v)]
         for u in range(1, 2 ** self.h):
             u_bin = format(u, f"0{self.h}b")
             u_bin_array = [int(bit) for bit in u_bin]
+
             cell_value = self.matmul(u_bin_array, r_array)
-            # print(u_bin_array)
-            # print(cell_value)
-            # print()
             G[0][u] = cell_value
+
             for j in range(1, self.v):
-                # print(2 ** (j * self.b))
-                G[j][u] = cell_value ** (2 ** (j * self.b))
-        # G = [[0 for x in range(v)] for y in range(2 ** h)]
-        # pprint(G)
-        return G
+                G[j][u] = cell_value * (2 ** (j * self.b))
+
+        self.G = G
 
     #  Exponentiation ########################################################
     def get_I(self, j, k):
@@ -132,35 +129,66 @@ class CombMethod:
 
             bit = e_cell[index]
 
-
             if bit == '0' or bit == '1':
                 I += int(bit) * (2 ** i)
                 # I += 2 ** i
         return I
 
-    def exponentiation(self):
-        R = 1
+    def exponentiation(self, e):
+        e_bin = "{0:b}".format(e)
+        self.create_E_matrix(e_bin=e_bin)
+
+        R = ECC.EccPoint(0, 0,
+                         curve="NIST P-521")  # neutral element of addition
         for k in range(self.b - 1, -1, -1):
-            R = R ** 2
+            R = R.double()
             for j in range(self.v - 1, -1, -1):
                 I_jk = self.get_I(j=j, k=k)
-                G_ijk = self.G[j][I_jk]
-                R = R * G_ijk
+                if I_jk > 0:
+                    G_ijk = self.G[j][I_jk]
+                    R = R + G_ijk
         return R
 
 
-def main():
-    for e in range(1, 20):
-        print(f"g=2, {e=}")
-        comb_method = CombMethod(g=3, e=e)
-        result = comb_method.exponentiation()
-        print(result)
-        print()
+def gen_prime(min, max):
+    p = 0
+    min_v = min
+    max_v = max
+    while not isprime(p):
+        p = randprime(2 ** min_v, 2 ** max_v)
+    return p
 
-    # comb_method = CombMethod(g=2, e=16)
-    # result = comb_method.exponentiation()
-    # print(result)
+
+def search(l, S):
+    comb_method_optimizer = CombMethodOptimizer(l=l, S=S)
+    comb_method_optimizer.start_search()
+    best = comb_method_optimizer.get_best()
+    print(best)
+
+    return best["a"], best["b"]
+
+
+def main(e, a, b, S):
+    g = ECC.generate(curve="NIST P-521").pointQ
+
+    comb_method = CombMethod(a=a, b=b, l=e.bit_length(), S=S)
+    comb_method.precompute(g=g)
+    result = comb_method.exponentiation(e=e)
+
+    print(f"{result.xy=}")
+    print(f"{(g * e).xy=}")
+
+
+def test(test_count, S_min, S_max, S_step):
+    for S in range(S_min, S_max, S_step):
+        for i in range(test_count):
+            e = randrange(1, 2 ** 100)
+            a, b = search(l=e.bit_length(), S=S)
+            main(e=e, a=a, b=b)
 
 
 if __name__ == "__main__":
-    main()
+    a, b = search()
+    a = 10
+    b = 3
+    main(a, b)
