@@ -1,5 +1,6 @@
 import functools
 import math
+import time
 from copy import deepcopy
 from random import randrange
 
@@ -8,6 +9,7 @@ from sympy import randprime, isprime
 
 from optimizer import CombMethodOptimizer
 import operator
+import matplotlib.pyplot as plt
 
 
 def cutr(string: str, n: int):
@@ -135,6 +137,9 @@ class CombMethod:
         return I
 
     def exponentiation(self, e):
+        s = 0
+        m = 0
+
         e_bin = "{0:b}".format(e)
         self.create_E_matrix(e_bin=e_bin)
 
@@ -142,12 +147,14 @@ class CombMethod:
                          curve="NIST P-521")  # neutral element of addition
         for k in range(self.b - 1, -1, -1):
             R = R.double()
+            s += 1
             for j in range(self.v - 1, -1, -1):
                 I_jk = self.get_I(j=j, k=k)
                 if I_jk > 0:
                     G_ijk = self.G[j][I_jk]
                     R = R + G_ijk
-        return R
+                    m += 1
+        return R, s, m
 
 
 def gen_prime(min, max):
@@ -173,22 +180,40 @@ def main(e, a, b, S):
 
     comb_method = CombMethod(a=a, b=b, l=e.bit_length(), S=S)
     comb_method.precompute(g=g)
-    result = comb_method.exponentiation(e=e)
+    result, s, m = comb_method.exponentiation(e=e)
+
+    expected = g * e
+    assert expected.xy == result.xy
 
     print(f"{result.xy=}")
-    print(f"{(g * e).xy=}")
+    print(f"{expected.xy=}")
+    print(f"squares = {s}, multiplications = {m}")
+
+    return result, s ,m
 
 
 def test(test_count, S_min, S_max, S_step):
+    s_array = []
+    m_array = []
     for S in range(S_min, S_max, S_step):
+        print(f"Testing for {S}:")
         for i in range(test_count):
             e = randrange(1, 2 ** 100)
             a, b = search(l=e.bit_length(), S=S)
-            main(e=e, a=a, b=b)
+            _, s, m = main(e=e, a=a, b=20, S=S)
+            s_array.append(s)
+            m_array.append(m)
+
+    plt.plot(range(S_min, S_max, S_step), s_array, '-m')
+    plt.plot(range(S_min, S_max, S_step), m_array, '--c')
+    plt.show()
+    plt.savefig(f"{time.time()}.png")
 
 
 if __name__ == "__main__":
-    a, b = search()
-    a = 10
-    b = 3
-    main(a, b)
+    do_test = True
+    if do_test:
+        test(test_count=1, S_min=100, S_max=500, S_step=25)
+    else:
+        a, b = search(l=100, S=100)
+        main(e=123456789, a=a, b=b, S=100)
