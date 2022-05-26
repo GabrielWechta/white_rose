@@ -49,18 +49,20 @@ class CombMethodOptimizer:
                 self.v - self.v_last)
 
     def average_computation_cost(self):
-        multiplication_cost = (((2 ** (self.h - 1)) - 1) / (2 ** (self.h - 1))) * (
-                    self.a - self.a_last) + (((2 ** (self.h)) - 1) / (2 ** (self.h))) * (
-                                          self.a_last - 1)
-        squaring_cost = self.b - 1
+        # TODO This is wrong, fix it
+        raise NotImplementedError
+
+        # multiplication_cost = (((2 ** (self.h - 1)) - 1) / (2 ** (self.h - 1))) * (
+        #             self.a - self.a_last) + (((2 ** (self.h)) - 1) / (2 ** (self.h))) * (
+        #                                   self.a_last - 1)
+        # squaring_cost = self.b - 1
 
         # cost from the paper - not good
         # P = self.a * (self.h - 1) + self.b * (self.v_last - 1) + self.v * (
         #         2 ** (self.h - 1) - self.h) + self.v_last * (
         #             2 ** (self.h - 1) - 1)
         # return P
-
-        return multiplication_cost + squaring_cost
+        # return multiplication_cost + squaring_cost
 
     def get_best(self):
         return self.best

@@ -206,14 +206,17 @@ def test(test_count, S_min, S_max, S_step):
 
     plt.plot(range(S_min, S_max, S_step), s_array, '-m')
     plt.plot(range(S_min, S_max, S_step), m_array, '--c')
-    plt.show()
     plt.savefig(f"{time.time()}.png")
+    plt.show()
 
 
 if __name__ == "__main__":
-    do_test = True
+    do_test = False
     if do_test:
         test(test_count=1, S_min=100, S_max=500, S_step=25)
     else:
-        a, b = search(l=100, S=100)
-        main(e=123456789, a=a, b=b, S=100)
+        a, b = search(l=521, S=5000)
+        main(e=123456789, a=a, b=b, S=5000)
+
+    # a, b = search(l=150, S=160)
+    # print(a, b)
