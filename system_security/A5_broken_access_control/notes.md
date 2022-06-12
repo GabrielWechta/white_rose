@@ -9,6 +9,14 @@ password: cat
 - send to responder
 - view response
 
+{
+  "role" : 3,
+  "color" : "yellow",
+  "size" : "small",
+  "name" : "Tom Cat",
+  "userId" : "2342384"
+}
+
 ### 4
 guessing: WebGoat/IDOR/profile/2342384
 
