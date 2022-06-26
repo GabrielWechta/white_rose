@@ -23,7 +23,7 @@ public ClassPathResource git() {
 4. open directory
 5. $ git log
 6. $ git restore *
-7. decompile PasswordResetLink.class on http://www.javadecompilers.com/
+7. decompile PasswordResetLink.class on https://jdec.app/
 
 import java.util.Random;
 
