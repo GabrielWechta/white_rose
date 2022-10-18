@@ -38,7 +38,7 @@ class Prover(Initiator):
 
 
 def main():
-    g = get_G1()
+    g = get_G1(b"Schnorr IS")
     prover = Prover(g=g, ip=HOSTNAME, port=PORT)
 
     A = prover.publish_pub_key()
