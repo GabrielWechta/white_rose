@@ -1,3 +1,4 @@
+"""Code by Adrian Cinal."""
 import socket
 from typing import Callable
 
