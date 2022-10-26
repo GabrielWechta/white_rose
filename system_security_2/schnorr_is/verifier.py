@@ -1,7 +1,7 @@
 from common_protocol import Responder
 from mcl_utils import get_Fr, get_G1, jstore, jload, G1, Fr, monitor_func
 
-HOSTNAME = "localhost"
+HOSTNAME = "172.20.10.2"
 PORT = 15000
 
 
@@ -50,7 +50,7 @@ def main():
     verifier = Verifier(g=g, ip=HOSTNAME, port=PORT)
 
     A_ = verifier.receive_message()
-    A = jload({'A': G1}, A_)[0]
+    A = jload({"A": G1}, A_)[0]
     verifier.receive_pub_key(A=A)
 
     X_ = verifier.receive_message()
@@ -65,8 +65,10 @@ def main():
     verifier.receive_response(s=s)
 
     if verifier.verify_response() is True:
+        verifier.send_message("Verification successful.")
         print("Verification successful.")
     else:
+        verifier.send_message("Verification failure.")
         print("Verification failure.")
 
 

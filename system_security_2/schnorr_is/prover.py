@@ -1,7 +1,7 @@
 from common_protocol import Initiator
 from mcl_utils import get_Fr, get_G1, jstore, jload, Fr, monitor_func
 
-HOSTNAME = "localhost"
+HOSTNAME = "172.20.10.5"
 PORT = 15000
 
 
@@ -56,6 +56,9 @@ def main():
 
     s = prover.produce_response()
     prover.send_message(message=jstore({"s": s}))
+
+    status = prover.receive_message()
+    print(status)
 
 
 if __name__ == "__main__":
