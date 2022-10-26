@@ -1,6 +1,5 @@
 from common_protocol import Initiator
-from mcl_utils import get_Fr, get_G1, jstore, jload, Fr
-from pickle import dumps, loads
+from mcl_utils import get_Fr, get_G1, jstore, jload, Fr, monitor_func
 
 HOSTNAME = "localhost"
 PORT = 15000
@@ -17,23 +16,27 @@ class Prover(Initiator):
         self.c = None
         self.s = None
 
+    @monitor_func
     def publish_pub_key(self):
-        print(f"Publishing public key:\n{self.A=}.")
+        # print(f"Publishing public key:\n{self.A=}.")
         return self.A
 
+    @monitor_func
     def produce_commitment(self):
         self.x = get_Fr()
         self.X = self.g * self.x
-        print(f"Producing commitment:\n{self.X=}.")
+        # print(f"Producing commitment:\n{self.X=}.")
         return self.X
 
+    @monitor_func
     def receive_challenge(self, c):
         self.c = c
-        print(f"Receiving challenge:\n{self.c=}.")
+        # print(f"Receiving challenge:\n{self.c=}.")
 
+    @monitor_func
     def produce_response(self):
         self.s = self.x + self.a * self.c
-        print(f"Producing response:\n{self.s=}.")
+        # print(f"Producing response:\n{self.s=}.")
         return self.s
 
 

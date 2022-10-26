@@ -1,5 +1,5 @@
 from common_protocol import Responder
-from mcl_utils import get_Fr, get_G1, jstore, jload, G1, Fr
+from mcl_utils import get_Fr, get_G1, jstore, jload, G1, Fr, monitor_func
 
 HOSTNAME = "localhost"
 PORT = 15000
@@ -14,23 +14,28 @@ class Verifier(Responder):
         self.X = None
         self.s = None
 
+    @monitor_func
     def produce_challenge(self):
         self.c = get_Fr()
-        print(f"Producing challenge:\n{self.c=}.")
+        # print(f"Producing challenge:\n{self.c=}.")
         return self.c
 
+    @monitor_func
     def receive_pub_key(self, A):
         self.A = A
-        print(f"Receiving public key:\n{self.A=}.")
+        # print(f"Receiving public key:\n{self.A=}.")
 
+    @monitor_func
     def receive_commitment(self, X):
         self.X = X
-        print(f"Receiving commitment:\n{self.X=}.")
+        # print(f"Receiving commitment:\n{self.X=}.")
 
+    @monitor_func
     def receive_response(self, s):
         self.s = s
-        print(f"Receiving response:\n{self.s=}.")
+        # print(f"Receiving response:\n{self.s=}.")
 
+    @monitor_func
     def verify_response(self):
         print(
             f"Verifying response: {self.g * self.s == self.X + (self.A * self.c)=}")

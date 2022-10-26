@@ -1,6 +1,8 @@
 import sys
 import os
 import json
+import functools
+
 
 sys.path.insert(1, '/home/gabriel/opt/mcl-python')
 
@@ -45,3 +47,13 @@ def jload(d, j):
             v = t.fromhex(j[k])
         r.append(v)
     return r
+
+
+def monitor_func(func):
+    @functools.wraps(func)
+    def wrapper(*func_args, **func_kwargs):
+        print('function call ' + func.__name__ + '()')
+        retval = func(*func_args,**func_kwargs)
+        print('function ' + func.__name__ + '() returns ' + repr(retval))
+        return retval
+    return wrapper
