@@ -1,18 +1,21 @@
-import sys
 from hashlib import sha256
 
-sys.path.insert(1, '/home/gabriel/opt/mcl-python')
-
-from mcl import Fr, G1, G2
+from mcl_utils import Fr, get_Fr, get_G1, pow_Fr, G1
 
 
-def get_Fr(value=None):
-    fr = Fr()
-    if value is None:
-        fr.setByCSPRNG()
-    else:
-        fr.setInt(value)
-    return fr
+def lagrangian_interpolation(x, abscissa_ordinate_dict):
+    main_sum = G1()
+    for i, abscissa_ordinate_i in abscissa_ordinate_dict.items():
+        x_i = abscissa_ordinate_i["abscissa"]
+        ordinate_i = abscissa_ordinate_i["ordinate"]
+        exp_product_i = get_Fr(1)
+        for j, abscissa_ordinate_j in abscissa_ordinate_dict.items():
+            if i == j:
+                continue
+            x_j = abscissa_ordinate_j["abscissa"]
+            exp_product_i *= (x - x_j) / (x_i - x_j)
+        main_sum += ordinate_i * exp_product_i
+    return main_sum
 
 
 class Polynomial:
@@ -25,8 +28,8 @@ class Polynomial:
     def __call__(self, x):
         pol_val = get_Fr(0)
         for i, a in enumerate(self.coefficients):
-            exponent = get_Fr(len(self.coefficients) - i - 1)
-            pol_val += a * x ** exponent
+            exponent = len(self.coefficients) - i - 1
+            pol_val += a * pow_Fr(fr=x, exp=exponent)
         return pol_val
 
     def __contains__(self, item):
