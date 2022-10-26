@@ -1,19 +1,24 @@
-#include <IRremote.h>
+#include<IRremote.h>
 
-const byte IR_RECEIVE_PIN = 6;
+
+int recv_pin = 6;
+IRrecv receiver(recv_pin);
+decode_results results;
 
 void setup()
 {
+   // put your setup code here, to run once:
    Serial.begin(9600);
-   Serial.println("IR Receive test");
-   IrReceiver.begin(IR_RECEIVE_PIN, ENABLE_LED_FEEDBACK);
+   receiver.enableIRIn();
 }
 
 void loop()
 {
-   if (IrReceiver.decode())
+   // put your main code here, to run repeatedly:
+   if (receiver.decode(&results))  // ********  added &results (a place to store the key code)
    {
-      Serial.println(IrReceiver.decodedIRData.command, HEX);
-      IrReceiver.resume();
+      Serial.println(results.value, HEX);
+      receiver.resume();
    }
+
 }
