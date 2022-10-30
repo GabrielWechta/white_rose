@@ -63,7 +63,7 @@ def main():
     verifier.send_message(message=jstore({"c": c}))
 
     s_ = verifier.receive_message()
-    s_1, s_2 = jload({'s_1': Fr, 's_2': Fr}, s_)[0]
+    s_1, s_2 = jload({'s_1': Fr, 's_2': Fr}, s_)
     verifier.receive_response(s_1=s_1, s_2=s_2)
 
     if verifier.verify_response() is True:

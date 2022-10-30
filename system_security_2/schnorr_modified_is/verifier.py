@@ -1,52 +1,58 @@
 from common_protocol import Responder
-from mcl_utils import get_Fr, get_G1, jstore, jload, G1, Fr, monitor_func
+from mcl_utils import get_Fr, jstore, jload, G1, G2, Fr, monitor_func, \
+    std_concat_method, get_G, GT
 
-HOSTNAME = "172.20.10.2"
+HOSTNAME = "localhost"
 PORT = 15000
+GROUP_G = G1
+GROUP_G_HAT = G2
+CONCAT_METHOD = std_concat_method
 
 
 class Verifier(Responder):
-    def __init__(self, g, ip: str, port: int):
-        super().__init__(ip, port)
+    def __init__(self, g: GROUP_G, ip: str = None, port: int = None):
+        if ip is not None and port is not None:
+            super().__init__(ip, port)
         self.g = g
+        self.g_hat = None
         self.A = None
         self.c = None
         self.X = None
-        self.s = None
+        self.S = None
 
     @monitor_func
     def produce_challenge(self):
         self.c = get_Fr()
-        # print(f"Producing challenge:\n{self.c=}.")
         return self.c
 
     @monitor_func
     def receive_pub_key(self, A):
         self.A = A
-        # print(f"Receiving public key:\n{self.A=}.")
 
     @monitor_func
     def receive_commitment(self, X):
         self.X = X
-        # print(f"Receiving commitment:\n{self.X=}.")
 
     @monitor_func
-    def receive_response(self, s):
-        self.s = s
-        # print(f"Receiving response:\n{self.s=}.")
+    def receive_response(self, S):
+        self.S = S
+
+    @monitor_func
+    def compute_g_hat(self):
+        self.g_hat = get_G(value=CONCAT_METHOD(self.X, self.c),
+                           group=GROUP_G_HAT)
 
     @monitor_func
     def verify_response(self):
-        print(
-            f"Verifying response: {self.g * self.s == self.X + (self.A * self.c)=}")
-        if self.g * self.s == self.X + (self.A * self.c):
+        if GT.pairing(self.g, self.S) == GT.pairing(self.X + self.A * self.c,
+                                                    self.g_hat):
             return True
         else:
             return False
 
 
 def main():
-    g = get_G1(b"Schnorr IS")
+    g = get_G(value=b"Modified Schnorr IS", group=GROUP_G)
     verifier = Verifier(g=g, ip=HOSTNAME, port=PORT)
 
     A_ = verifier.receive_message()
@@ -60,9 +66,11 @@ def main():
     c = verifier.produce_challenge()
     verifier.send_message(message=jstore({"c": c}))
 
-    s_ = verifier.receive_message()
-    s = jload({'s': Fr}, s_)[0]
-    verifier.receive_response(s=s)
+    verifier.compute_g_hat()
+
+    S_ = verifier.receive_message()
+    S = jload({'S': GROUP_G_HAT}, S_)[0]
+    verifier.receive_response(S=S)
 
     if verifier.verify_response() is True:
         verifier.send_message("Verification successful.")

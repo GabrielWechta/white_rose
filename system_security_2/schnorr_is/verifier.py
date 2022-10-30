@@ -7,7 +7,8 @@ GROUP = G1
 
 class Verifier(Responder):
     def __init__(self, g: GROUP, ip: str, port: int):
-        super().__init__(ip, port)
+        if ip is not None and port is not None:
+           super().__init__(ip, port)
         self.g = g
         self.A = None
         self.c = None

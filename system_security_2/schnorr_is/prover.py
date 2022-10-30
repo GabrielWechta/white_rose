@@ -8,7 +8,8 @@ GROUP = G1
 
 class Prover(Initiator):
     def __init__(self, g: GROUP, ip: str = None, port: int = None):
-        super().__init__(ip, port)
+        if ip is not None and port is not None:
+            super().__init__(ip, port)
         self.g = g
         self.a = get_Fr()
         self.x = None
