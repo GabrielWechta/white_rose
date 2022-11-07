@@ -4,7 +4,7 @@ from proof_of_possession.cloud import Cloud
 
 
 def main():
-    client = Client(z=6, ip="HOSTNAME", port=10)
+    client = Client(z=200, ip="HOSTNAME", port=10)
     client.setup()
     client.read_file_store_as_Fr(filepath="block.txt")
     client.poly()
