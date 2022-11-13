@@ -19,7 +19,7 @@ def main():
     P = cloud.gen_proof()
 
     client.receive_proof(P=P)
-    print(client.check_proof())
+    print(client.check_proof())z
 
 
 if __name__ == "__main__":
