@@ -2,10 +2,10 @@ from common_protocol import Responder
 from mcl_utils import get_Fr, jstore, jload, G1, G2, Fr, monitor_func, \
     std_concat_method, get_G, GT
 
-HOSTNAME = "localhost"
+HOSTNAME = "0.0.0.0"
 PORT = 15000
-GROUP_G = G1
-GROUP_G_HAT = G2
+GROUP_G = G2
+GROUP_G_HAT = G1
 CONCAT_METHOD = std_concat_method
 
 
@@ -44,8 +44,7 @@ class Verifier(Responder):
 
     @monitor_func
     def verify_response(self):
-        if GT.pairing(self.g, self.S) == GT.pairing(self.X + self.A * self.c,
-                                                    self.g_hat):
+        if GT.pairing(self.S, self.g) == GT.pairing(self.g_hat, self.X + self.A * self.c):
             return True
         else:
             return False
@@ -55,12 +54,13 @@ def main():
     g = get_G(value=b"Modified Schnorr IS", group=GROUP_G)
     verifier = Verifier(g=g, ip=HOSTNAME, port=PORT)
 
-    A_ = verifier.receive_message()
-    A = jload({"A": G1}, A_)[0]
-    verifier.receive_pub_key(A=A)
+    # A_ = verifier.receive_message()
+    # A = jload({"A": GROUP_G}, A_)[0]
 
-    X_ = verifier.receive_message()
-    X = jload({'X': G1}, X_)[0]
+    A_X_ = verifier.receive_message()
+    A, X = jload({"A": GROUP_G, "X": GROUP_G}, A_X_)
+
+    verifier.receive_pub_key(A=A)
     verifier.receive_commitment(X=X)
 
     c = verifier.produce_challenge()

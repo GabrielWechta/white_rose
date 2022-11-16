@@ -2,10 +2,10 @@ from common_protocol import Initiator
 from mcl_utils import get_Fr, jstore, jload, Fr, monitor_func, G1, G2, \
     get_G, std_concat_method
 
-HOSTNAME = "localhost"
+HOSTNAME = "0.0.0.0"
 PORT = 15000
-GROUP_G = G1
-GROUP_G_HAT = G2
+GROUP_G = G2
+GROUP_G_HAT = G1
 CONCAT_METHOD = std_concat_method
 
 
@@ -52,10 +52,10 @@ def main():
     prover = Prover(g=g, ip=HOSTNAME, port=PORT)
 
     A = prover.publish_pub_key()
-    prover.send_message(message=jstore({"A": A}))
+    # prover.send_message(message=jstore({"A": A}))
 
     X = prover.produce_commitment()
-    prover.send_message(message=jstore({"X": X}))
+    prover.send_message(message=jstore({"X": X, "A": A}))
 
     c_ = prover.receive_message()
     c = jload({'c': Fr}, c_)[0]
