@@ -22,6 +22,11 @@ def get_Fr(value=None):
         fr.setInt(value)
     return fr
 
+def pow_Fr(fr, exp):
+    result = get_Fr(1)
+    for _ in range(exp):
+        result *= fr
+    return fr
 
 def get_G1(value=None):
     if value is None:

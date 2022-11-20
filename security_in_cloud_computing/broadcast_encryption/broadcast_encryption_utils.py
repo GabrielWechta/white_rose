@@ -1,9 +1,29 @@
 from hashlib import sha256
+from typing import overload
+from collections import Counter
+from mcl_utils import Fr, get_Fr, get_G1, G1, pow_Fr
 
-from mcl_utils import Fr, get_Fr, get_G1, pow_Fr, G1
+
+def lagrangian_interpolation_list(x, abscissa_ordinate_list):
+    abscissas = [el[0] for el in abscissa_ordinate_list]
+    seen = []
+    for abscissa in abscissas:
+        if abscissa not in seen:
+            seen.append(abscissa)
+
+    assert len(seen) == len(abscissas), "There are recurring abscissas in Interpolation set."
+    main_sum = G1()
+    for i, (x_i, ordinate_i) in enumerate(abscissa_ordinate_list):
+        exp_product_i = get_Fr(1)
+        for j, (x_j, _) in enumerate(abscissa_ordinate_list):
+            if i == j:
+                continue
+            exp_product_i *= (x - x_j) / (x_i - x_j)
+        main_sum += ordinate_i * exp_product_i
+    return main_sum
 
 
-def lagrangian_interpolation(x, abscissa_ordinate_dict):
+def lagrangian_interpolation_dict(x, abscissa_ordinate_dict):
     main_sum = G1()
     for i, abscissa_ordinate_i in abscissa_ordinate_dict.items():
         x_i = abscissa_ordinate_i["abscissa"]

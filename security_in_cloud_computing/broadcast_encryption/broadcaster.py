@@ -14,33 +14,45 @@ class Broadcaster(Responder):
         self.z = z
         self.g = None
         self.polynomial = None
-        self.phi = None
+        self.users_abscissa_dict = {}
+        self.x_c = None
 
     @monitor_func
     def setup(self, g):
         self.g = g
         coefficients = []
         for i in range(self.z + 1):
-            a_i = get_Fr(CONCAT_METHOD(self.sk, i))
+            # a_i = get_Fr(CONCAT_METHOD(self.sk, i))
+            a_i = get_Fr()
             coefficients.append(a_i)
         self.polynomial = Polynomial(coefficients=coefficients)
 
     @monitor_func
     def register_user(self, i):
-        x_i = get_Fr(CONCAT_METHOD(i, self.sk))
-        y_i = Polynomial(x_i)
+        # x_i = get_Fr(CONCAT_METHOD(i, self.sk))
+        x_i = get_Fr()
+        y_i = self.polynomial(x_i)
+        self.users_abscissa_dict[i] = x_i
         return x_i, y_i
 
     @monitor_func
-    def make_header(self, target_users_ids):
+    def make_header(self, excluded_users_ids):
         phi = []
         r = get_Fr()
-        for j in target_users_ids:
-            x_j = get_Fr(CONCAT_METHOD(j, self.sk))
+        for j, abscissa in self.users_abscissa_dict.items():
+            if j in excluded_users_ids:
+                x_j = abscissa
+            else:
+                x_j = get_Fr()
             y_j = self.g * (r * self.polynomial(x_j))
             phi.append((x_j, y_j))
-        x_c = get_Fr()
-        return self.g * r, phi, x_c
+        self.x_c = get_Fr()
+        return self.g * r, phi, self.x_c
+
+    @monitor_func
+    def calculate_fresh_K(self):
+        K = self.polynomial(self.x_c)
+
 
 
 def main():
