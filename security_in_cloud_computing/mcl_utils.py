@@ -64,3 +64,11 @@ def monitor_func(func):
         return retval
 
     return wrapper
+
+
+def std_concat_method(*args):
+    con = ""
+    for arg in args:
+        con += str(arg)
+
+    return str.encode(con)
