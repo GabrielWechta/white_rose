@@ -7,7 +7,7 @@ def main():
     z = 3
     broadcaster = Broadcaster(z=z)
     g = get_G1()
-    broadcaster.setup(g=g)
+    broadcaster.setup()
 
     users = []
     for user_id in range(z):
