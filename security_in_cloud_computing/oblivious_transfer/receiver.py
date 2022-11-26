@@ -9,12 +9,11 @@ from oblivious_transfer.parser import parse_args
 
 
 class Receiver(Initiator):
-    def __init__(self, j: int, g: GROUP, ot_type: str, n: int, ip: str, port: int):
+    def __init__(self, j: int, g: GROUP, ot_type: str, ip: str, port: int):
         super().__init__(ip, port)
         self.j = j
         self.g = g
         self.ot_type = ot_type
-        self.n = n
 
         self.alpha = None
         self.Rs = None
@@ -27,7 +26,11 @@ class Receiver(Initiator):
     def produce_W(self):
         self.alpha = get_Fr()
         R = self.Rs[self.j]
-        self.W = R * self.alpha
+        if self.ot_type == "krzywiecki":
+            self.W = R * self.alpha
+        elif self.ot_type == "rev_gr_el":
+            self.W = R + (self.g * self.alpha)
+
         return self.W
 
     def set_Cs(self, Cs: List[str]):
@@ -36,22 +39,26 @@ class Receiver(Initiator):
     def produce_message(self):
         C = self.Cs[self.j]
         hash_obj = HASH_CLS()
-        hash_obj.update(bytes(self.g * self.alpha))
-        c_bytes = base64.b64decode(C)
-        h_bytes = hash_obj.digest()
-        m_bytes = BYTES_XOR(base64.b64decode(C), hash_obj.digest())
-        print(c_bytes)
-        print(h_bytes)
-        print(m_bytes)
-        # print(m_bytes.decode("ascii"))
-        m = base64.b64encode(m_bytes).decode("ascii")
+        if self.ot_type == "krzywiecki":
+            g_a_bytes = bytes(str(self.g * self.alpha).encode("ascii"))
+            hash_obj.update(g_a_bytes)
+        elif self.ot_type == "rev_gr_el":
+            R = self.Rs[self.j]
+            R_a_bytes = bytes(str(R * self.alpha).encode("ascii"))
+            hash_obj.update(R_a_bytes)
+
+        h_g_bytes = hash_obj.digest()
+        C_encoded = C.encode("ascii")
+        C_bytes = base64.b64decode(C_encoded)
+        m_bytes = BYTES_XOR(C_bytes, h_g_bytes)
+        m = m_bytes.decode("ascii")
         return m
 
 
 def main():
     args = parse_args()
     g = get_G(value=b"Oblivious Transfer", group=GROUP)
-    receiver = Receiver(j=1, g=g, ot_type=args.ot_type, n=args.n, ip=args.ip, port=args.port)
+    receiver = Receiver(j=args.j, g=g, ot_type=args.ot_type, ip=args.ip, port=args.port)
 
     Rs_ = receiver.receive_message()
     Rs = jload({"Rs": [GROUP]}, Rs_, True)["Rs"]

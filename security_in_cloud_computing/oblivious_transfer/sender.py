@@ -6,7 +6,6 @@ from oblivious_transfer.parser import parse_args
 import base64
 
 
-
 class Sender(Responder):
     def __init__(self, g: GROUP, ot_type: str, n: int, ip: str, port: int):
         super().__init__(ip, port)
@@ -31,11 +30,17 @@ class Sender(Responder):
         self.W = W
 
     def produce_Cs(self):
-        for r, m in zip(self.rs, self.messages):
-            K = self.W * (get_Fr(value=1) / r)
+        for r, R, m in zip(self.rs, self.Rs, self.messages):
+            if self.ot_type == "krzywiecki":
+                K = self.W * (get_Fr(1) / r)
+            elif self.ot_type == "rev_gr_el":
+                K = (self.W - R) * r
             hash_obj = HASH_CLS()
-            hash_obj.update(bytes(K))
-            C_bytes = BYTES_XOR(m.encode("ascii"), hash_obj.digest())
+            K_bytes = bytes(str(K).encode("ascii"))
+            hash_obj.update(K_bytes)
+            h_K_bytes = hash_obj.digest()
+            m_bytes = m.encode("ascii")
+            C_bytes = BYTES_XOR(m_bytes, h_K_bytes)
             C = base64.b64encode(C_bytes).decode("ascii")
             self.Cs.append(C)
         return self.Cs

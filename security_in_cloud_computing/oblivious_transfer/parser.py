@@ -20,6 +20,7 @@ def parse_args() -> argparse.Namespace:
         "--ot_type",
         dest="ot_type",
         choices=["krzywiecki", "rev_gr_el"],
+        default="krzywiecki",
         type=str,
     )
 
@@ -29,4 +30,9 @@ def parse_args() -> argparse.Namespace:
         type=int
     )
 
+    parser.add_argument(
+        "--j",
+        dest="j",
+        type=int
+    )
     return parser.parse_args()
