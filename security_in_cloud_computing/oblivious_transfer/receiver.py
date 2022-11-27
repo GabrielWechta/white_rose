@@ -5,7 +5,7 @@ from common_protocol import Initiator
 from klib import jload, jstore
 from mcl_utils import get_Fr, get_G
 from oblivious_transfer.oblivious_transfer_utils import GROUP, BYTES_XOR, HASH_CLS
-from oblivious_transfer.parser import parse_args
+from parser import parse_args
 
 
 class Receiver(Initiator):

@@ -2,7 +2,7 @@ from common_protocol import Responder
 from klib import jload, jstore
 from mcl_utils import get_Fr, get_G
 from oblivious_transfer.oblivious_transfer_utils import GROUP, HASH_CLS, BYTES_XOR
-from oblivious_transfer.parser import parse_args
+from parser import parse_args
 import base64
 
 
