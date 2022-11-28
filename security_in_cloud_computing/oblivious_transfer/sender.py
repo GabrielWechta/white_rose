@@ -36,19 +36,19 @@ class Sender(Responder):
             elif self.ot_type == "rev_gr_el":
                 K = (self.W - R) * r
             hash_obj = HASH_CLS()
-            K_bytes = bytes(str(K).encode("ascii"))
+            K_bytes = str(K).encode("utf-8")
             hash_obj.update(K_bytes)
             h_K_bytes = hash_obj.digest()
-            m_bytes = m.encode("ascii")
+            m_bytes = m.encode("utf-8")
             C_bytes = BYTES_XOR(m_bytes, h_K_bytes)
-            C = base64.b64encode(C_bytes).decode("ascii")
+            C = C_bytes.hex()
             self.Cs.append(C)
         return self.Cs
 
 
 def main():
     args = parse_args()
-    g = get_G(value=b"Oblivious Transfer", group=GROUP)
+    g = get_G(value=b"genQ", group=GROUP)
     sender = Sender(g=g, ot_type=args.ot_type, n=args.n, ip=args.ip, port=args.port)
 
     Rs = sender.produce_Rs()

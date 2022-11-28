@@ -2,7 +2,7 @@
 import socket
 from typing import Callable
 
-RECV_BUF_SIZE = 16 * 1024  # Receive a page
+RECV_BUF_SIZE = 32 * 1024  # Receive a page
 STRING_ENCODING = "utf-8"
 IP_VERSION = socket.AF_INET  # Use IPv4
 

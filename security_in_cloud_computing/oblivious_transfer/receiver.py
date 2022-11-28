@@ -1,4 +1,3 @@
-import base64
 from typing import List
 
 from common_protocol import Initiator
@@ -30,6 +29,7 @@ class Receiver(Initiator):
             self.W = R * self.alpha
         elif self.ot_type == "rev_gr_el":
             self.W = R + (self.g * self.alpha)
+        print(f"{self.W=}")
 
         return self.W
 
@@ -40,24 +40,23 @@ class Receiver(Initiator):
         C = self.Cs[self.j]
         hash_obj = HASH_CLS()
         if self.ot_type == "krzywiecki":
-            g_a_bytes = bytes(str(self.g * self.alpha).encode("ascii"))
+            g_a_bytes = str(self.g * self.alpha).encode("utf-8")
             hash_obj.update(g_a_bytes)
         elif self.ot_type == "rev_gr_el":
             R = self.Rs[self.j]
-            R_a_bytes = bytes(str(R * self.alpha).encode("ascii"))
+            R_a_bytes = str(R * self.alpha).encode("utf-8")
             hash_obj.update(R_a_bytes)
 
         h_g_bytes = hash_obj.digest()
-        C_encoded = C.encode("ascii")
-        C_bytes = base64.b64decode(C_encoded)
+        C_bytes = bytes.fromhex(C)
         m_bytes = BYTES_XOR(C_bytes, h_g_bytes)
-        m = m_bytes.decode("ascii")
+        m = m_bytes.hex()
         return m
 
 
 def main():
     args = parse_args()
-    g = get_G(value=b"Oblivious Transfer", group=GROUP)
+    g = get_G(value=b"genQ", group=GROUP)
     receiver = Receiver(j=args.j, g=g, ot_type=args.ot_type, ip=args.ip, port=args.port)
 
     Rs_ = receiver.receive_message()
