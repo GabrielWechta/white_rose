@@ -1,23 +1,18 @@
 from common_protocol import Responder
 from klib import jload
-from mcl_utils import get_Fr, Fr, std_concat_method, get_G
+from mcl_utils import get_G, GT, G1, G2
 from parser import parse_args
-from schnorr_sign.schnorr_signature_utils import GROUP, HASH_CLS
 
 
 class Verifier(Responder):
-    def __init__(self, g: GROUP, ip: str = None, port: int = None):
+    def __init__(self, g2: G2, ip: str = None, port: int = None):
         if ip is not None and port is not None:
             super().__init__(ip, port)
-        self.g = g
+        self.g2 = g2
 
-    def verify(self, A, sigma, m):
-        X, s = sigma
-        hash_obj = HASH_CLS()
-        hash_obj.update(std_concat_method(str(X), m))
-        h_bytes = hash_obj.digest()
-        h = get_Fr(value=int.from_bytes(h_bytes, "big"))
-        if self.g * s == X + (A * h):
+    def verify(self, X2, sigma, m):
+        h1 = get_G(value=m.encode("utf-8"), group=G1)
+        if GT.pairing(sigma, self.g2) == GT.pairing(h1, X2):
             print("Signature verified")
         else:
             print("Signature rejected")
@@ -25,18 +20,16 @@ class Verifier(Responder):
 
 def main():
     args = parse_args()
-    g = get_G(value=b"Schnorr Signature", group=GROUP)
-    verifier = Verifier(g=g, ip=args.ip, port=args.port)
+    g2 = get_G(value=b"BLS Signature", group=G2)
+    verifier = Verifier(g2=g2, ip=args.ip, port=args.port)
 
-    A_ = verifier.receive_message()
-    A = jload({"A": GROUP}, A_, True)["A"]
+    X2_ = verifier.receive_message()
+    X2 = jload({"X2": G2}, X2_, True)["X2"]
 
     sig_ = verifier.receive_message()
-    sig = jload({"sig": (GROUP, Fr, str)}, sig_, True)["sig"]
-    X, s, m = sig
-    sigma = (X, s)
+    sigma, m = jload({"sig": (G1, str)}, sig_, True)["sig"]
 
-    verifier.verify(A=A, sigma=sigma, m=m)
+    verifier.verify(X2=X2, sigma=sigma, m=m)
 
 
 if __name__ == "__main__":
