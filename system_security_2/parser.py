@@ -15,4 +15,13 @@ def parse_args() -> argparse.Namespace:
         dest="ip",
         type=str,
     )
+
+    parser.add_argument(
+        "--dkg",
+        dest="dkg",
+        action="store_true",
+        default=False,
+        type=bool,
+    )
+
     return parser.parse_args()
