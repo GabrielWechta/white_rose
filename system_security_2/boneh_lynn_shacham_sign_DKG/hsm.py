@@ -6,11 +6,11 @@ from mcl_utils import get_Fr
 class RandomnessSource():
     def __init__(self, seed):
         self.prng = random
-        self.prng.seed(seed)
+        # self.prng.seed(seed)
         self.toss = None
 
     def toss_randomness(self):
-        self.toss = self.prng.randint(0, 2 ** 64)
+        self.toss = self.prng.randint(0, 2 ** 512)
 
     def get_toss(self):
         return self.toss
@@ -22,7 +22,7 @@ class HSM:
         self.i = i
         self.prng_1 = prng_1
         self.prng_2 = prng_2
-        self.reg_size = 64
+        self.reg_size = 2 ** 512
         self.toss_1 = None
         self.toss_2 = None
         self.toss_sum = None
@@ -34,13 +34,17 @@ class HSM:
 
     def get_private_key_share(self):
         if self.i == 1:
-            self.x_share = self.pm(self.x_share, self.toss_sum)
+            self.x_share = self.pm(self.x_share, get_Fr(self.toss_sum))
         if self.i == 2:
-            self.x_share = self.mp(self.x_share, self.toss_sum)
+            self.x_share = self.mp(self.x_share, get_Fr(self.toss_sum))
         if self.i == 3:
-            self.x_share = self.pm(self.x_share, self.toss_sum)
+            self.x_share = self.pm(self.x_share, get_Fr(self.toss_sum))
         if self.i == 4:
-            self.x_share = self.mp(self.x_share, self.toss_sum)
+            self.x_share = self.mp(self.x_share, get_Fr(self.toss_sum))
+        print(self.toss_sum)
+        print(get_Fr(self.toss_sum))
+        print(f"{self.i}-HSM has {self.x_share=}.")
+        return self.x_share
 
     def pm(self, a, b):
         if self.toss_sum % 2 == 0:

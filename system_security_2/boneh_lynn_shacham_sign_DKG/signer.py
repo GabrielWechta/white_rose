@@ -12,12 +12,11 @@ class Signer(Initiator):
         if ip is not None and port is not None:
             super().__init__(ip, port)
         self.g2 = g2
-        self.prng_1 = RandomnessSource(seed=1)
-        self.prng_2 = RandomnessSource(seed=2)
+        self.prng_1 = RandomnessSource(seed=33)
+        self.prng_2 = RandomnessSource(seed=222)
         self.HSMs = []
         self.initiate_HSMs()
-        self.x2 = self.get_private_key()
-        self.X2 = self.g2 * self.x2
+        self.X2 = self.g2 * self.get_private_key()
 
     def initiate_HSMs(self):
         self.prng_1.toss_randomness()
@@ -28,18 +27,18 @@ class Signer(Initiator):
         self.prng_1.toss_randomness()
         self.prng_2.toss_randomness()
 
-        x_sum = 0
+        x_sum = get_Fr(0)
         for hsm in self.HSMs:
             hsm.produce_tosses()
             x_sum += hsm.get_private_key_share()
-        return get_Fr(x_sum)
+        return x_sum
 
     def get_pub_key(self):
         return self.X2
 
     def sign(self, m: str):
         h1 = get_G(value=m.encode("utf-8"), group=G1)
-        sigma = h1 * self.x2
+        sigma = h1 * self.get_private_key()
         return sigma
 
 
