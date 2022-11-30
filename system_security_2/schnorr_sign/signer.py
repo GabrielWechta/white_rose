@@ -1,6 +1,6 @@
 from common_protocol import Initiator
 from klib import jstore
-from mcl_utils import get_Fr, get_G, std_concat_method
+from mcl_utils import get_Fr, get_G, std_concat_method, Fr
 from parser import parse_args
 from schnorr_sign.schnorr_signature_utils import HASH_CLS, GROUP
 
@@ -21,26 +21,21 @@ class Signer(Initiator):
     def sign(self, m: str):
         x = get_Fr()
         X = self.g * x
-        hash_obj = HASH_CLS()
-        hash_obj.update(std_concat_method(str(X), m))
-        h_bytes = hash_obj.digest()
-        h = get_Fr(value=int.from_bytes(h_bytes, "big"))
+        h = Fr.setHashOf(std_concat_method(X, m))
         s = x + self.a * h
-        sigma = (X, s)
-        return sigma, m
+        return X, s, m
 
 
 def main():
     args = parse_args()
-    g = get_G(value=b"Schnorr Signature", group=GROUP)
+    g = get_G(value=b"genQ", group=GROUP)
     signer = Signer(g=g, ip=args.ip, port=args.port)
 
-    A = signer.get_pub_key()
-    signer.send_message(message=jstore({"A": A}))
+    public_key = signer.get_pub_key()
 
-    m = "I am Claus-Peter Schnorr."
-    sigma, _ = signer.sign(m=m)
-    signer.send_message(message=jstore({"sig": (sigma[0], sigma[1], m)}))
+    message = "I am Claus-Peter Schnorr."
+    commitment, response, _ = signer.sign(m=message)
+    signer.send_message(message=jstore({"X": commitment, "s": response, "m": message, "A": public_key}))
 
 
 if __name__ == "__main__":

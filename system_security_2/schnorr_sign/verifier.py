@@ -13,10 +13,7 @@ class Verifier(Responder):
 
     def verify(self, A, sigma, m):
         X, s = sigma
-        hash_obj = HASH_CLS()
-        hash_obj.update(std_concat_method(str(X), m))
-        h_bytes = hash_obj.digest()
-        h = get_Fr(value=int.from_bytes(h_bytes, "big"))
+        h = Fr.setHashOf(std_concat_method(X, m))
         if self.g * s == X + (A * h):
             print("Signature verified")
         else:
@@ -25,15 +22,13 @@ class Verifier(Responder):
 
 def main():
     args = parse_args()
-    g = get_G(value=b"Schnorr Signature", group=GROUP)
+    g = get_G(value=b"genQ", group=GROUP)
     verifier = Verifier(g=g, ip=args.ip, port=args.port)
 
-    A_ = verifier.receive_message()
-    A = jload({"A": GROUP}, A_, True)["A"]
-
     sig_ = verifier.receive_message()
-    sig = jload({"sig": (GROUP, Fr, str)}, sig_, True)["sig"]
-    X, s, m = sig
+    sig = jload({"X": GROUP, "s": Fr, "m": str, "A": GROUP}, sig_, True)
+
+    X, s, m, A = sig["X"], sig["s"], sig["m"], sig["A"],
     sigma = (X, s)
 
     verifier.verify(A=A, sigma=sigma, m=m)

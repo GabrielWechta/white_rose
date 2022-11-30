@@ -18,22 +18,22 @@ class Signer(Initiator):
         return self.X2
 
     def sign(self, m: str):
-        h1 = get_G(value=m.encode("utf-8"), group=G1)
+        h1 = get_G(value=m.encode(), group=G1)
         sigma = h1 * self.x2
         return sigma
 
 
 def main():
     args = parse_args()
-    g2 = get_G(value=b"BLS Signature", group=G2)
+    g2 = get_G(value=b"genQ", group=G2)
     signer = Signer(g2=g2, ip=args.ip, port=args.port)
 
     X2 = signer.get_pub_key()
-    signer.send_message(message=jstore({"X2": X2}))
+    # signer.send_message(message=jstore({"X2": X2}))
 
     m = "We are Boneh, Lynn and Shacham."
     sigma = signer.sign(m=m)
-    signer.send_message(message=jstore({"sig": (sigma, m)}))
+    signer.send_message(message=jstore({"S": sigma, "m": m, "X": X2}))
 
 
 if __name__ == "__main__":

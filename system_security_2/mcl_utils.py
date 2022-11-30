@@ -90,4 +90,4 @@ def std_concat_method(*args):
     for arg in args:
         con += str(arg)
 
-    return  str.encode(con)
+    return con.encode()
