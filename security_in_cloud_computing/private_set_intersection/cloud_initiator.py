@@ -23,16 +23,16 @@ def main():
     mine_public_set = cloud_initiator.produce_mine_public_set()
     cloud_initiator.send_message(message=jstore({"A": mine_public_set}))
 
-    B_Ap_ = cloud_initiator.receive_message()
-    B_Ap = jload({"B": [GROUP], "Ap": [GROUP]}, B_Ap_, True)
+    B_C_ = cloud_initiator.receive_message()
+    B_C = jload({"B": [GROUP], "C": [GROUP]}, B_C_, True)
 
-    party_public_set = B_Ap["B"]
-    mine_public_set_party = B_Ap["Ap"]
+    party_public_set = B_C["B"]
+    mine_public_set_party = B_C["C"]
     cloud_initiator.set_party_public_set(party_public_set)
     cloud_initiator.set_mine_public_set_party(mine_public_set_party)
 
     party_public_set_mine = cloud_initiator.produce_party_public_set_mine()
-    cloud_initiator.send_message(message=jstore({"mB": party_public_set_mine}))
+    cloud_initiator.send_message(message=jstore({"D": party_public_set_mine}))
 
     cloud_initiator.calculate_intersection()
 

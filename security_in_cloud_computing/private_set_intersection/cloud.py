@@ -36,6 +36,7 @@ class Cloud:
         self.mine_public_set_party = mine_public_set_party
 
     def calculate_intersection(self):
+        print(f"I have: {self.private_set}")
         print("We share:")
         for i, mps in enumerate(self.mine_public_set_party):
             for ps in self.party_public_set:

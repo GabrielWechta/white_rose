@@ -26,11 +26,11 @@ def main():
     mine_public_set = cloud_responder.produce_mine_public_set()
     party_public_set_mine = cloud_responder.produce_party_public_set_mine()
 
-    cloud_responder.send_message(message=jstore({"B": mine_public_set, "Ap": party_public_set_mine}))
+    cloud_responder.send_message(message=jstore({"B": mine_public_set, "C": party_public_set_mine}))
 
-    mB_ = cloud_responder.receive_message()
-    mB = jload({"mB": [GROUP]}, mB_, True)
-    mine_public_set_party = mB["mB"]
+    D_ = cloud_responder.receive_message()
+    D = jload({"D": [GROUP]}, D_, True)
+    mine_public_set_party = D["D"]
     cloud_responder.set_mine_public_set_party(mine_public_set_party)
 
     cloud_responder.calculate_intersection()
