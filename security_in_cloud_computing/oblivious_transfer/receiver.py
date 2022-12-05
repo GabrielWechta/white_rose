@@ -50,7 +50,7 @@ class Receiver(Initiator):
         h_g_bytes = hash_obj.digest()
         C_bytes = bytes.fromhex(C)
         m_bytes = BYTES_XOR(C_bytes, h_g_bytes)
-        m = m_bytes.hex()
+        m = m_bytes.decode()
         return m
 
 
