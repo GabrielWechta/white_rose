@@ -18,6 +18,10 @@ def get_Fr(value=None):
     fr = Fr()
     if value is None:
         fr.setByCSPRNG()
+    elif isinstance(value, str):
+        fr = Fr.setHashOf(value.encode())
+    elif isinstance(value, bytes):
+        fr = Fr.setHashOf(value)
     else:
         fr.setInt(value)
     return fr
