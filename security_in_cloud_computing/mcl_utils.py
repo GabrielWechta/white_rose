@@ -61,6 +61,16 @@ def get_G(value=None, group=Union[G1, G2]):
     return g
 
 
+def mcl_sum(li):
+    if len(li) > 1:
+        s = li[0] + li[1]
+        for e in li[2:]:
+            s += e
+        return s
+    else:
+        return li[0]
+
+
 def jstore(d):
     return json.dumps(
         {k: v.getStr().decode() if type(v) != bytes else v.hex() for k, v in
