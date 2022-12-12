@@ -14,7 +14,7 @@ class Client(Responder):
             Responder.__init__(self, ip, port)
         self.d = get_Fr()
         self.perm_private_set = shuffle_ret(private_set)
-        print(self.perm_private_set)
+        print(f"I have {self.perm_private_set=}")
 
     def produce_perm_hash_exp_set(self):
         hash_set = [get_G(value=c.encode(), group=GROUP) for c in self.perm_private_set]
@@ -36,8 +36,11 @@ def main():
     his_hash_exp_set = A["A"]
     his_perm_hash_exp_exp_set = client.produce_perm_exp_exp_set(his_hash_exp_set=his_hash_exp_set)
 
-    client.send_message(message=jstore({"A_hat": his_perm_hash_exp_exp_set, "B_hat": mine_perm_hash_exp_set}))
+    client.send_message(message=jstore({"B": his_perm_hash_exp_exp_set, "C": mine_perm_hash_exp_set}))
     print("I have finished.")
+
+    l = client.receive_message()
+    print(f"We share {l} files.")
 
 
 if __name__ == "__main__":

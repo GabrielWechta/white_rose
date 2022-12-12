@@ -14,6 +14,7 @@ class Server(Initiator):
             Initiator.__init__(self, ip, port)
         self.private_set = private_set
         self.r = get_Fr()
+        print(f"I have {self.private_set=}")
 
     def produce_hash_exp_set(self):
         hash_set = [get_G(value=s.encode(), group=GROUP) for s in self.private_set]
@@ -25,6 +26,7 @@ class Server(Initiator):
         his_hash_exp_set = set(str(e) for e in his_hash_exp_list)
         l = len(mine_hash_exp_exp_set & his_hash_exp_set)
         print("Intersection size is: ", l)
+        return l
 
 
 def main():
@@ -35,11 +37,14 @@ def main():
     server.send_message(message=jstore({"A": hash_exp_set}))
 
     A_hat_B_hat_ = server.receive_message()
-    A_hat_B_hat = jload({"A_hat": [GROUP], "B_hat": [GROUP]}, A_hat_B_hat_, True)
+    A_hat_B_hat = jload({"B": [GROUP], "C": [GROUP]}, A_hat_B_hat_, True)
 
-    mine_hash_exp_exp_list = A_hat_B_hat["A_hat"]
-    his_hash_exp_list = A_hat_B_hat["B_hat"]
-    server.find_intersection_size(mine_hash_exp_exp_list=mine_hash_exp_exp_list, his_hash_exp_list=his_hash_exp_list)
+    mine_hash_exp_exp_list = A_hat_B_hat["B"]
+    his_hash_exp_list = A_hat_B_hat["C"]
+    l = server.find_intersection_size(mine_hash_exp_exp_list=mine_hash_exp_exp_list,
+                                      his_hash_exp_list=his_hash_exp_list)
+
+    server.send_message(message=str(l))
 
 
 if __name__ == "__main__":
