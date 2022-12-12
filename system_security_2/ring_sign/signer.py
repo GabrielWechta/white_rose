@@ -52,15 +52,16 @@ def main():
     signer = Signer(g=g, ip=args.ip, port=args.port)
     As = signer.get_pub_keys()
 
-    signer.send_message(message=jstore({"As": As}))
-
     m = "In the land of Mordor, in the fires of Mount Doom, " \
         "the Dark Lord Sauron forged in secret a master Ring, " \
         "to control all others. And into this Ring, he poured his " \
         "cruelty, his malice, and his will to dominate all life. " \
         "One Ring to rule them all."
     s, Rs = signer.sign(m=m)
-    signer.send_message(message=jstore({"m": m, "s": s, "Rs": Rs}))
+    signer.send_message(message=jstore({"m": m, "s": s, "R": Rs, "A": As}))
+
+    response = signer.receive_message()
+    print(response)
 
 
 if __name__ == "__main__":

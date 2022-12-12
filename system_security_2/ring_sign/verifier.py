@@ -26,16 +26,16 @@ def main():
     g = get_G(value=b"genQ", group=GROUP)
     verifier = Verifier(g=g, ip=args.ip, port=args.port)
 
-    As_ = verifier.receive_message()
-    As = jload({"As": [GROUP]}, As_, True)["As"]
-
-    m_s_Rs_ = verifier.receive_message()
-    m_s_Rs = jload({"m": str, "s": Fr, "Rs": [GROUP]}, m_s_Rs_, True)
+    m_s_R_A_ = verifier.receive_message()
+    m_s_Rs = jload({"m": str, "s": Fr, "R": [GROUP], "A": [GROUP]}, m_s_R_A_, True)
     m = m_s_Rs["m"]
     s = m_s_Rs["s"]
-    Rs = m_s_Rs["Rs"]
+    R = m_s_Rs["R"]
+    A = m_s_Rs["A"]
 
-    verifier.verify(s=s, Rs=Rs, m=m, As=As)
+    verifier.verify(s=s, Rs=R, m=m, As=A)
+
+    verifier.send_message(message="Your signature is perfect.")
 
 
 if __name__ == "__main__":
