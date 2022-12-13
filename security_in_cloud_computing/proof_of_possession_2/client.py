@@ -1,45 +1,72 @@
-from hashlib import sha256
-
 from common_protocol import Initiator
-from mcl_utils import Fr, get_G
+from klib import jstore
+from mcl_utils import get_G, G2, G1, get_Fr, std_concat_method, mcl_sum, GT
 from parser import parse_args
-from proof_of_possession_2.proof_of_possession_2_utils import GROUP
+from proof_of_possession_2.proof_of_possession_2_utils import generate_file, psi_Fr
 
 
 class Client(Initiator):
-    def __init__(self, g: GROUP, n: int, m: int, ip: str = None, port: int = None):
+    def __init__(self, u: G1, g: G2, m: int, ip: str = None, port: int = None):
         if ip is not None and port is not None:
             Initiator.__init__(self, ip, port)
+        self.u = u
         self.g = g
-        self.n = n
         self.m = m
-        
+        self.x = get_Fr()
+        self.y = self.g * self.x
 
-    def read_file_store_as_Fr(self, filepath: str):
-        self.f_id = sha256(filepath.encode('UTF-8')).digest()
+        self.file = None
+        self.file_id = None
+        self.sigmas = []
+        self.k = None
+        self.rs = None
 
-        with open(filepath, "r") as file:
-            file_lines = file.readlines()
+    def store_sigmas(self):
+        for j, b in enumerate(self.file):
+            h = get_G(std_concat_method(self.file_id, j))
+            sigma = (h + (self.u * b)) * self.x
+            self.sigmas.append(sigma)
 
-        split_list = list(split_gen(file_lines, self.z))
+    def produce_k_and_rs(self):
+        self.k = get_Fr()
+        self.rs = [psi_Fr(k=self.k, j=j) for j in range(len(self.file))]
 
-        for i, elements_list in enumerate(split_list):
-            line = "".join(elements_list)
-            m = Fr.setHashOf(line.encode('UTF-8'))
-            self.all_m.append(m)
-            self.tag_block_dict[i] = {"m": m, "t": None}
-
-    def check_proof(self):
-        if self.K == self.P:
+    def verify(self, sigma, mu):
+        W_elements = [get_G(std_concat_method(self.file_id, j)) * r for j, r in enumerate(self.rs)]
+        W = mcl_sum(li=W_elements)
+        if GT.pairing(sigma, self.g) == GT.pairing(W + self.u * mu, self.y):
             return "Proof of possession accepted."
         else:
             return "Proof of possession rejected."
 
+    def set_file(self, file, file_id):
+        self.file = file
+        self.file_id = file_id
+
+    def get_file(self):
+        return self.file
+
+    def get_sigmas(self):
+        return self.sigmas
+
+    def get_k(self):
+        return self.k
+
 
 def main():
     args = parse_args()
-    g = get_G(value=b"genQ", group=GROUP)
-    client = Client(g=g, ip=args.ip, port=args.port)
+    u = get_G(value=b"genQ", group=G1)
+    g = get_G(value=b"genQ", group=G2)
+    m = 7
+    client = Client(u=u, g=g, m=m, ip=args.ip, port=args.port)
+    client.set_file(file=generate_file(part_num=m), file_id="Zdjecia_z_Chorwacji_2012")
+    client.store_sigmas()
+    client.produce_k_and_rs()
+
+    file = client.get_file()
+    sigmas = client.get_sigmas()
+    k = client.get_k()
+    client.send_message(message=jstore({"F": file, "sigma": sigmas, "k": k}))
 
 
 if __name__ == "__main__":
