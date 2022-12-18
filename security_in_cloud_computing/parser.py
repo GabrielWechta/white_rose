@@ -35,4 +35,10 @@ def parse_args() -> argparse.Namespace:
         dest="j",
         type=int
     )
+
+    parser.add_argument(
+        "--m",
+        dest="m",
+        type=int
+    )
     return parser.parse_args()

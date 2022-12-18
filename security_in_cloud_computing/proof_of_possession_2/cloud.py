@@ -1,5 +1,5 @@
 from common_protocol import Responder
-from klib import jload
+from klib import jload, jstore
 from mcl_utils import get_G, mcl_sum, Fr, G1
 from parser import parse_args
 from proof_of_possession_2.proof_of_possession_2_utils import GROUP, psi_Fr
@@ -25,7 +25,7 @@ class Cloud(Responder):
     def set_k(self, k):
         self.k = k
 
-    def produce_rs(self):
+    def store_rs(self):
         self.rs = [psi_Fr(k=self.k, j=j) for j in range(len(self.file))]
 
     def produce_sigma(self):
@@ -49,14 +49,17 @@ def main():
     sigmas = F_sigmas_k["sigma"]
     k = F_sigmas_k["k"]
 
-    client.set_file(file=generate_file(part_num=m), file_id="Zdjecia_z_Chorwacji_2012")
-    client.store_sigmas()
-    client.produce_k_and_rs()
+    cloud.set_file(file=file)
+    cloud.set_sigmas(sigmas=sigmas)
+    cloud.set_k(k=k)
 
-    file = client.get_file()
-    sigmas = client.get_sigmas()
-    k = client.get_k()
-    client.send_message(message=jstore({"F": file, "sigma": sigmas, "k": k}))
+    cloud.store_rs()
+    sigma = cloud.produce_sigma()
+    mu = cloud.produce_mu()
+    cloud.send_message(message=jstore({"sigma": sigma, "mu": mu}))
+
+    response = cloud.receive_message()
+    print(response)
 
 
 if __name__ == "__main__":
