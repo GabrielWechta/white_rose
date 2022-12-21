@@ -21,7 +21,7 @@ def parse_args() -> argparse.Namespace:
         dest="dkg",
         action="store_true",
         default=False,
-        type=bool,
+        # type=bool,
     )
 
     return parser.parse_args()
