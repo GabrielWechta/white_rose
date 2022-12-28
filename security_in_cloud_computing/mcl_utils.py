@@ -28,6 +28,8 @@ def get_Fr(value=None):
 
 
 def pow_Fr(fr, exp):
+    if exp == 0:
+        return get_Fr(1)
     result = get_Fr(1)
     for _ in range(exp):
         result *= fr

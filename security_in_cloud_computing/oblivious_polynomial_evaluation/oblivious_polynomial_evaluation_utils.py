@@ -1,9 +1,16 @@
 import hashlib
 
-from mcl_utils import G1, get_Fr, std_concat_method, pow_Fr
+from mcl_utils import G1, get_Fr, pow_Fr, Fr
 
 GROUP = G1
 HASH_CLS = hashlib.sha256
+
+
+def bytes_xor(ba1, ba2):
+    return bytes([_a ^ _b for _a, _b in zip(ba1, ba2)])
+
+
+BYTES_XOR = bytes_xor
 
 
 def lagrangian_interpolation_list(x, abscissa_ordinate_list):
@@ -14,7 +21,7 @@ def lagrangian_interpolation_list(x, abscissa_ordinate_list):
             seen.append(abscissa)
 
     assert len(seen) == len(abscissas), "There are recurring abscissas in Interpolation set."
-    main_sum = G1()
+    main_sum = get_Fr(0)
     for i, (x_i, ordinate_i) in enumerate(abscissa_ordinate_list):
         exp_product_i = get_Fr(1)
         for j, (x_j, _) in enumerate(abscissa_ordinate_list):
@@ -22,29 +29,15 @@ def lagrangian_interpolation_list(x, abscissa_ordinate_list):
                 continue
             exp_product_i *= (x - x_j) / (x_i - x_j)
         main_sum += ordinate_i * exp_product_i
-    return main_sum
 
-
-def lagrangian_interpolation_dict(x, abscissa_ordinate_dict):
-    main_sum = G1()
-    for i, abscissa_ordinate_i in abscissa_ordinate_dict.items():
-        x_i = abscissa_ordinate_i["abscissa"]
-        ordinate_i = abscissa_ordinate_i["ordinate"]
-        exp_product_i = get_Fr(1)
-        for j, abscissa_ordinate_j in abscissa_ordinate_dict.items():
-            if i == j:
-                continue
-            x_j = abscissa_ordinate_j["abscissa"]
-            exp_product_i *= (x - x_j) / (x_i - x_j)
-        main_sum += ordinate_i * exp_product_i
     return main_sum
 
 
 class Polynomial:
-    def __init__(self, coefficients=None):
-        if coefficients is None:
-            coefficients = []
-
+    def __init__(self, degree: int, coefficient_0_0: int = None):
+        coefficients = [get_Fr() for _ in range(degree + 1)]
+        if coefficient_0_0 is not None:
+            coefficients[-1] = get_Fr(value=coefficient_0_0)
         self.coefficients = coefficients
 
     def __call__(self, x):
@@ -57,8 +50,10 @@ class Polynomial:
     def __contains__(self, item):
         return item in self.coefficients
 
-    def populate_randomly(self, degree: int, coefficient_0_0: bool):
-        coefficients = [get_Fr() for _ in range(degree)]
-        if coefficient_0_0 is True:
-            coefficients[0] = get_Fr(value=0)
-        return self.__init__(coefficients=coefficients)
+class ConnectedPolynomial:
+    def __init__(self, A: Polynomial, O: Polynomial):
+        self.A = A
+        self.O = O
+
+    def __call__(self, abscissa: Fr, ordinate: Fr):
+        return self.A(abscissa) + self.O(ordinate)
