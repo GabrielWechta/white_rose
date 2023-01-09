@@ -103,14 +103,14 @@ def main():
     for i, ind in enumerate(sender.I):
         print(f"Doing {i} OT.")
         Rs_ = sender.receive_message()
-        Rs = jload({"Rs": [GROUP]}, Rs_, True)["Rs"]
+        Rs = jload({"R": [GROUP]}, Rs_, True)["R"]
         sender.set_Rs(Rs=Rs)
 
         W = sender.produce_W(j=ind)
         sender.send_message(jstore({"W": W}))
 
         Cs_ = sender.receive_message()
-        Cs = jload({"Cs": [str]}, Cs_, True)["Cs"]
+        Cs = jload({"c": [str]}, Cs_, True)["c"]
         sender.set_Cs(Cs=Cs)
 
         interpolation_ordinate = sender.produce_message(j=ind)

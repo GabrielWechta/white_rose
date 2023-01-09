@@ -83,14 +83,14 @@ def main():
     for i in range(receiver.n):
         print(f"Doing {i} OT.")
         Rs = receiver.produce_Rs()
-        receiver.send_message(jstore({"Rs": Rs}))
+        receiver.send_message(jstore({"R": Rs}))
 
         W_ = receiver.receive_message()
         W = jload({"W": GROUP}, W_, True)["W"]
         receiver.set_W(W=W)
 
         Cs = receiver.produce_Cs()
-        receiver.send_message(jstore({"Cs": Cs}))
+        receiver.send_message(jstore({"c": Cs}))
 
 
 if __name__ == "__main__":

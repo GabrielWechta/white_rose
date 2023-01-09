@@ -2,10 +2,7 @@ from common_protocol import Responder
 from klib import jload, jstore
 from mcl_utils import get_G, get_Fr
 from parser import parse_args
-from private_set_intersection.private_set_intersection_utils import GROUP
-
-from private_set_intersection_cardinality.private_set_intersection_cardinality_utils import set_exponentiation, \
-    shuffle_ret
+from private_set_intersection_cardinality_utils import GROUP, set_exponentiation, shuffle_ret
 
 
 class Client(Responder):

@@ -2,9 +2,7 @@ from common_protocol import Initiator
 from klib import jstore, jload
 from mcl_utils import std_concat_method, get_G, get_Fr
 from parser import parse_args
-from private_set_intersection.private_set_intersection_utils import GROUP
-from private_set_intersection_cardinality.private_set_intersection_cardinality_utils import set_exponentiation
-
+from private_set_intersection_cardinality_utils import GROUP, set_exponentiation
 CONCAT_METHOD = std_concat_method
 
 

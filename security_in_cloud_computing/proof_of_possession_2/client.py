@@ -56,7 +56,7 @@ class Client(Initiator):
 def main():
     args = parse_args()
     u = get_G(value=b"genQ", group=G1)
-    g = get_G(value=b"genQ", group=G2)
+    g = get_G(value=b"genP", group=G2)
     client = Client(u=u, g=g, m=args.m, ip=args.ip, port=args.port)
     client.set_file(file=generate_file(part_num=args.m), file_id="Zdjecia_z_Chorwacji_2012")
     client.store_sigmas()
