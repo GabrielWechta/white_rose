@@ -1,0 +1,3 @@
+avrdude -v -p atmega328p -c arduino -P /dev/ttyACM0 -b 115200 -D -U flash:w:/home/gabriel/white_rose/embedded_security/lab_4/code.hex:i
+
+http://arahna.de/arduino-command-line/
