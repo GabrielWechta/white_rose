@@ -50,13 +50,13 @@ def main():
         raise ValueError("Bad Mac")
 
     # verifying signature
-    if initiator.schnorr_verify(g=g, pub_key=B, sigma=(sig_commit, sig_response), message=("1", X, Y)):
+    if initiator.schnorr_verify(g=g, pub_key=B, sigma=(sig_commit, sig_response), message=(X, Y, "1")):
         print("Signature verified")
     else:
         print("Signature not verified. Rejecting...")
         raise ValueError("Bad Signature")
 
-    sigma, mac = initiator.sign_and_mac(g=g, priv_key=initiator.a, message=("0", X, Y), cert=A)
+    sigma, mac = initiator.sign_and_mac(g=g, priv_key=initiator.a, message=(X, Y, "0"), cert=A)
     initiator.send_message(jstore({
         "sig_commit": sigma[0],
         "sig_response": sigma[1],

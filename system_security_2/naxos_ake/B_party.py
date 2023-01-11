@@ -16,7 +16,7 @@ class BParty(Responder, NAXOSParty):
         t1 = self.pk_y * self.commitment_exp_m
         t2 = self.commitment_y * self.sk_m
         t3 = self.commitment_y * self.commitment_exp_m
-        concat = std_concat_method(t1, t2, t3, "A", "B")
+        concat = std_concat_method(t1, t2, t3, self.pk_y, self.pk_m)
         self.hash_obj.update(concat)
         self.K = self.hash_obj.digest()
 

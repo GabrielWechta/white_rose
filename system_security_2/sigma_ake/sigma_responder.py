@@ -31,7 +31,7 @@ def main():
     X, A = jload({"X": GROUP, "A": GROUP}, X_A_)
     responder.derive_keys(eph_pub=X, eph_priv_key=responder.eph_priv_key)
 
-    sigma, mac = responder.sign_and_mac(g=g, priv_key=responder.b, message=("1", X, Y), cert=B)
+    sigma, mac = responder.sign_and_mac(g=g, priv_key=responder.b, message=(X, Y, "1"), cert=B)
     responder.send_message(jstore({
         "Y": Y,
         "sig_commit": sigma[0],
@@ -55,7 +55,7 @@ def main():
         raise ValueError("Bad Mac")
 
     # verifying signature
-    if responder.schnorr_verify(g=g, pub_key=A, sigma=(sig_commit, sig_response), message=("0", X, Y)):
+    if responder.schnorr_verify(g=g, pub_key=A, sigma=(sig_commit, sig_response), message=(X, Y, "0")):
         print("Signature verified")
     else:
         print("Signature not verified. Rejecting...")

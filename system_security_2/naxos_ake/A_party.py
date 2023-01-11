@@ -5,8 +5,6 @@ from naxos_ake.naxos_ake_utils import GROUP, HASH_CLS, LAM
 from naxos_ake.naxos_party import NAXOSParty
 from parser import parse_args
 
-CONCAT_METHOD = std_concat_method
-
 
 class AParty(Initiator, NAXOSParty):
     def __init__(self, g: GROUP, lam: int, ip: str = None, port: int = None):
@@ -18,7 +16,7 @@ class AParty(Initiator, NAXOSParty):
         t1 = self.commitment_y * self.sk_m
         t2 = self.pk_y * self.commitment_exp_m
         t3 = self.commitment_y * self.commitment_exp_m
-        concat = std_concat_method(t1, t2, t3, "A", "B")
+        concat = std_concat_method(t1, t2, t3, self.pk_m, self.pk_y)
         self.hash_obj.update(concat)
         self.K = self.hash_obj.digest()
 

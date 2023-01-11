@@ -37,14 +37,14 @@ class SIGMAParty:
     def schnorr_sign(g: GROUP, priv_key: Fr, message: Tuple[str, str, GROUP]):
         x = get_Fr()
         X = g * x
-        h = Fr.setHashOf(std_concat_method(X, message))
+        h = Fr.setHashOf(str(message).encode())
         s = x + priv_key * h
         return X, s, message
 
     @staticmethod
     def schnorr_verify(g: GROUP, pub_key: GROUP, sigma: Tuple[GROUP, Fr], message: Tuple[str, GROUP, GROUP]):
         X, s = sigma
-        h = Fr.setHashOf(std_concat_method(X, message))
+        h = Fr.setHashOf(str(message).encode())
         if g * s == X + (pub_key * h):
             return True
         else:
