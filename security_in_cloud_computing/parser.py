@@ -57,13 +57,13 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--x1",
         dest="x1",
-        type=bool
+        type=int
     )
 
     parser.add_argument(
         "--x2",
         dest="x2",
-        type=bool
+        type=int
     )
 
     parser.add_argument(
