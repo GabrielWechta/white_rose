@@ -1,84 +1,122 @@
-from typing import Tuple, List
+from typing import List
+
+from Crypto.Cipher import AES
+from Crypto.Util.Padding import unpad
 
 from common_protocol import Responder
+from garbled_circuit.garbled_circuit_utils import byte_concat
 from klib import jload, jstore
-from mcl_utils import Fr, get_Fr, get_G
-from oblivious_polynomial_evaluation.oblivious_polynomial_evaluation_utils import Polynomial, ConnectedPolynomial, \
-    HASH_CLS, BYTES_XOR, GROUP
+from mcl_utils import get_Fr, get_G
+from oblivious_polynomial_evaluation.oblivious_polynomial_evaluation_utils import HASH_CLS, BYTES_XOR, GROUP
 from parser import parse_args
 
 
 class Evaluator(Responder):
-    def __init__(self, x2: bool, ot_type: str, ip: str = None, port: int = None):
+    def __init__(self, g: GROUP, x2: bool, ot_type: str, ip: str = None, port: int = None):
         if ip is not None and port is not None:
             Responder.__init__(self, ip, port)
+        self.g = g
         self.x2 = x2
-        self.ot_type = ot_type
+        self.hash_obj = HASH_CLS()
+        self.C = None
+        self.La = None
+        self.Lb = None
+        self.k = None
 
-        self.rs = []
-        self.Rs = []
-        self.Cs = []
+        # OT attributes
+        self.ot_type = ot_type
+        self.alpha = None
+        self.Rs = None
+        self.Cs = None
         self.W = None
 
-    def set_commitment_pairs(self, commitment_pairs: List[Tuple[Fr, Fr]]):
-        self.commitment_pairs = commitment_pairs
+    # OT methods
+    def set_Rs(self, Rs: List[GROUP]):
+        self.Rs = Rs
 
-    def mask_commitment(self):
-        self.masked_commitment = []
-        for abscissa, ordinate in self.commitment_pairs:
-            self.masked_commitment.append(self.Q(abscissa=abscissa, ordinate=ordinate))
+    def produce_W(self, j: int):
+        self.alpha = get_Fr()
+        R = self.Rs[j]
+        if self.ot_type == "krzywiecki":
+            self.W = R * self.alpha
+        elif self.ot_type == "rev_gr_el":
+            self.W = R + (self.g * self.alpha)
 
-    def produce_Rs(self):
-        self.rs = []
-        self.Rs = []
-        for _ in range(len(self.commitment_pairs)):
-            r = get_Fr()
-            self.rs.append(r)
-            self.Rs.append(self.g * r)
-        return self.Rs
+        return self.W
 
-    def set_W(self, W: GROUP):
-        self.W = W
+    def set_Cs(self, Cs: List[str]):
+        self.Cs = Cs
 
-    def produce_Cs(self):
-        self.Cs = []
-        for r, R, m_fr in zip(self.rs, self.Rs, self.masked_commitment):
-            if self.ot_type == "krzywiecki":
-                K = self.W * (get_Fr(1) / r)
-            elif self.ot_type == "rev_gr_el":
-                K = (self.W - R) * r
-            hash_obj = HASH_CLS()
-            K_bytes = str(K).encode()
-            hash_obj.update(K_bytes)
-            h_K_bytes = hash_obj.digest()
-            m_bytes = m_fr.serialize()
-            C_bytes = BYTES_XOR(m_bytes, h_K_bytes)
-            C = C_bytes.hex()
-            self.Cs.append(C)
-        return self.Cs
+    def calculate_Lb(self, j):
+        C = self.Cs[j]
+        hash_obj = HASH_CLS()
+        if self.ot_type == "krzywiecki":
+            g_a_bytes = str(self.g * self.alpha).encode("utf-8")
+            hash_obj.update(g_a_bytes)
+        elif self.ot_type == "rev_gr_el":
+            R = self.Rs[j]
+            R_a_bytes = str(R * self.alpha).encode("utf-8")
+            hash_obj.update(R_a_bytes)
+
+        h_g_bytes = hash_obj.digest()
+        C_bytes = bytes.fromhex(C)
+        m_bytes = BYTES_XOR(C_bytes, h_g_bytes)
+        self.Lb = m_bytes
+
+    def set_La(self, La):
+        self.La = La
+
+    def set_C(self, C):
+        self.C = C
+
+    def prepare_key(self):
+        self.hash_obj.update(byte_concat(bytes.fromhex(self.La), self.Lb))
+        self.k = self.hash_obj.digest()
+        # print(f"{self.k=}")
+
+    @staticmethod
+    def decrypt(key, ciphertext):
+        iv_str, payload_str = ciphertext
+        iv, payload = bytes.fromhex(iv_str), bytes.fromhex(payload_str)
+        cipher = AES.new(key=key, mode=AES.MODE_CBC, iv=iv)
+        plaintext = unpad(cipher.decrypt(payload), AES.block_size)
+        return plaintext
+
+    def produce_garbled_circuit_output(self):
+        output = self.decrypt(key=self.k, ciphertext=self.C)
+        return output.decode()
 
 
 def main():
     args = parse_args()
     g = get_G(value=b"genQ", group=GROUP)
-    evaluator = Evaluator(x2=args.x2, ot_type=args.ot_type, ip=args.ip, port=args.port)
+    evaluator = Evaluator(g=g, x2=bool(args.x2), ot_type=args.ot_type, ip=args.ip, port=args.port)
 
-    commitment_pairs_ = evaluator.receive_message()
-    commitment_pairs = jload({"S": [(Fr, Fr)]}, commitment_pairs_, True)["S"]
-    evaluator.set_commitment_pairs(commitment_pairs=commitment_pairs)
+    Las_Cs_ = evaluator.receive_message()
+    Las, Cs = jload({"Las": [str], "Cs": [(str, str)]}, Las_Cs_)
 
-    evaluator.mask_commitment()
+    j = 0 if evaluator.x2 is False else 1
+    evaluator.set_La(La=Las[j])
+    evaluator.set_C(C=Cs[j])
 
     Rs_ = evaluator.receive_message()
     Rs = jload({"R": [GROUP]}, Rs_, True)["R"]
     evaluator.set_Rs(Rs=Rs)
 
-    W = evaluator.produce_W(...)
+    W = evaluator.produce_W(j=j)
     evaluator.send_message(jstore({"W": W}))
 
     Cs_ = evaluator.receive_message()
     Cs = jload({"c": [str]}, Cs_, True)["c"]
     evaluator.set_Cs(Cs=Cs)
+
+    evaluator.calculate_Lb(j=j)
+    evaluator.prepare_key()
+    gc_output = evaluator.produce_garbled_circuit_output()
+
+    evaluator.send_message(message=gc_output)
+
+    print(f"Evaluator calculated: {gc_output}")
 
 
 if __name__ == "__main__":
