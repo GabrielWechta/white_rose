@@ -5,7 +5,6 @@ from mcl_utils import G2
 
 GROUP = G2
 HASH_CLS = hashlib.sha256
-# BC_MODE = AES.MODE_GCM
 
 
 def NAND(x1: bool, x2: bool):
@@ -17,7 +16,7 @@ def NAND(x1: bool, x2: bool):
         y = 1
     if x1 is True and x2 is True:
         y = 0
-    return str(y).encode()
+    return bytes([y])
 
 
 BOOLEAN_CIRCUIT = NAND

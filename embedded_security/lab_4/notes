@@ -1,3 +1,5 @@
-avrdude -v -p atmega328p -c arduino -P /dev/ttyACM0 -b 115200 -D -U flash:w:/home/gabriel/white_rose/embedded_security/lab_4/code.hex:i
+    avrdude -v -p atmega328p -c arduino -P /dev/ttyACM0 -b 115200 -D -U flash:w:/home/gabriel/white_rose/embedded_security/lab_4/code.hex:i
 
 http://arahna.de/arduino-command-line/
+
+https://cs.pwr.edu.pl/blaskiewicz/dydaktyka/embedded-security/CameraKey.html?fbclid=IwAR3aU5i6bLsdKTW9L_21_o4ZnEqOw81kTMh35pLVTXNfdu6mEpNLU31-i2A

@@ -1,3 +1,4 @@
+from pprint import pprint
 from random import shuffle
 
 from Crypto.Cipher import AES
@@ -16,8 +17,7 @@ from parser import parse_args
 def prepare_for_sending(d):
     d.pop('b')
     d["La"] = d["La"].hex()
-    d["o"][0] = d["o"][0].hex()
-    d["o"][1] = d["o"][1].hex()
+    d["o"] = d["o"].hex()
 
 
 class Garbler(Initiator):
@@ -49,10 +49,10 @@ class Garbler(Initiator):
         self.W = None
 
     def prepare_labels(self):
-        self.garb_0 = get_random_bytes(16)
-        self.garb_1 = get_random_bytes(16)
-        self.eval_0 = get_random_bytes(16)
-        self.eval_1 = get_random_bytes(16)
+        self.garb_0 = get_random_bytes(32)
+        self.garb_1 = get_random_bytes(32)
+        self.eval_0 = get_random_bytes(32)
+        self.eval_1 = get_random_bytes(32)
 
     @staticmethod
     def hash(data):
@@ -73,9 +73,10 @@ class Garbler(Initiator):
     @staticmethod
     def encrypt(key, data):
         # print(data)
-        cipher = AES.new(key=key, mode=AES.MODE_CBC)
+        cipher = AES.new(key=key, mode=AES.MODE_ECB)
         ciphertext = cipher.encrypt(pad(data, AES.block_size))
-        return [cipher.iv, ciphertext]
+        # print(cipher.iv)
+        return ciphertext
 
     def prepare_garbled_circuit(self):
         # garbling
@@ -138,19 +139,21 @@ class Garbler(Initiator):
             C_bytes = BYTES_XOR(m_bytes, h_K_bytes)
             C = C_bytes.hex()
             self.Cs.append(C)
+        # print(self.Cs)
         return self.Cs
 
 
 def main():
     args = parse_args()
     g = get_G(value=b"genQ", group=GROUP)
-    garbler = Garbler(g=g, x1=bool(args.x1), ip=args.ip, ot_type="krzywiecki", port=args.port)
+    garbler = Garbler(g=g, x1=bool(args.x1), ip=args.ip, ot_type=args.ot_type, port=args.port)
     garbler.prepare_labels()
     garbler.generate_keys()
     garbler.prepare_garbled_circuit()
     share = garbler.produce_garbled_circuit_share()
 
-    garbler.send_message(jstore({"Las": [share[0]["La"], share[1]["La"]], "Cs": [share[0]["o"], share[1]["o"]]}))
+    # L can be any of both from share[...]["La"]
+    garbler.send_message(jstore({"L": share[0]["La"], "c": [share[0]["o"], share[1]["o"]]}))
 
     Rs = garbler.produce_Rs()
     garbler.send_message(jstore({"R": Rs}))
@@ -162,8 +165,8 @@ def main():
     Cs = garbler.produce_Cs()
     garbler.send_message(jstore({"c": Cs}))
 
-    gc_output = garbler.receive_message()
-    print(f"Garbler calculated: {gc_output}")
+    # gc_output = garbler.receive_message()
+    # print(f"Garbler calculated: {gc_output}")
 
 
 if __name__ == "__main__":

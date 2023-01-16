@@ -72,19 +72,20 @@ class Evaluator(Responder):
     def prepare_key(self):
         self.hash_obj.update(byte_concat(bytes.fromhex(self.La), self.Lb))
         self.k = self.hash_obj.digest()
-        # print(f"{self.k=}")
+        print(f"{self.k=}")
 
     @staticmethod
     def decrypt(key, ciphertext):
-        iv_str, payload_str = ciphertext
-        iv, payload = bytes.fromhex(iv_str), bytes.fromhex(payload_str)
-        cipher = AES.new(key=key, mode=AES.MODE_CBC, iv=iv)
+        # iv_str, payload_str = ciphertext
+        print(f"{ciphertext=}")
+        payload = bytes.fromhex(ciphertext)
+        cipher = AES.new(key=key, mode=AES.MODE_ECB)
         plaintext = unpad(cipher.decrypt(payload), AES.block_size)
         return plaintext
 
     def produce_garbled_circuit_output(self):
         output = self.decrypt(key=self.k, ciphertext=self.C)
-        return output.decode()
+        return int.from_bytes(output, "little")
 
 
 def main():
@@ -92,12 +93,12 @@ def main():
     g = get_G(value=b"genQ", group=GROUP)
     evaluator = Evaluator(g=g, x2=bool(args.x2), ot_type=args.ot_type, ip=args.ip, port=args.port)
 
-    Las_Cs_ = evaluator.receive_message()
-    Las, Cs = jload({"Las": [str], "Cs": [(str, str)]}, Las_Cs_)
+    L_c_ = evaluator.receive_message()
+    L, c = jload({"L": str, "c": [str]}, L_c_)
 
     j = 0 if evaluator.x2 is False else 1
-    evaluator.set_La(La=Las[j])
-    evaluator.set_C(C=Cs[j])
+    evaluator.set_La(La=L)
+    evaluator.set_C(C=c[j])
 
     Rs_ = evaluator.receive_message()
     Rs = jload({"R": [GROUP]}, Rs_, True)["R"]
@@ -114,7 +115,7 @@ def main():
     evaluator.prepare_key()
     gc_output = evaluator.produce_garbled_circuit_output()
 
-    evaluator.send_message(message=gc_output)
+    # evaluator.send_message(message=str(gc_output))
 
     print(f"Evaluator calculated: {gc_output}")
 
