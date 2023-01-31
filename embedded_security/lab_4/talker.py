@@ -27,8 +27,8 @@ class MySerialWorker(object):
     def main_loop(self):
         while self.ser.isOpen():
             while self.pending_queries:
-                start_time, fd, cmd, callback = self.pending_queries.pop(0)
-                callback(start_time, fd, cmd, self._do_query(cmd))
+                start_time, fd, result_dict, cmd, callback = self.pending_queries.pop(0)
+                callback(start_time, fd, result_dict, cmd, self._do_query(cmd))
 
             if self.ser.inWaiting():
                 _ = self.ser.readlines()
