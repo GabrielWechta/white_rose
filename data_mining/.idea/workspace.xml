@@ -5,12 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="dd75f013-d40a-4e14-91de-a0cd3bee8a76" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/lab_4/self_chest_xray_sick.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lab_4/task_16.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/lab_4/task_16.ipynb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lab_4/task_17.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/lab_4/task_17.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../embedded_security/lab_4/.idea/lab_4.iml" beforeDir="false" afterPath="$PROJECT_DIR$/../embedded_security/lab_4/.idea/lab_4.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../embedded_security/lab_4/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../embedded_security/lab_4/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../embedded_security/lab_4/talker.py" beforeDir="false" afterPath="$PROJECT_DIR$/../embedded_security/lab_4/talker.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
