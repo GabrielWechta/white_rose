@@ -26,6 +26,9 @@ class Channel:
     def get_leader_id(self):
         return self.leader_id
 
+    def get_slots_length(self):
+        return len(self.slots)
+
     def describe(self):
         print(f"{self.slots=}")
         print(f"{len(self.slots)=}")
