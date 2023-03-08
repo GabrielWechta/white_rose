@@ -15,6 +15,7 @@ def known_u_p_generator(nodes_num: int):
         for i in range(1, m + 1):
             yield (1 / 2) ** i
 
+
 class Channel:
     def __init__(self):
         self.slots = ["null"]
@@ -65,7 +66,6 @@ class Node:
         self.i += 1
 
 
-
 class LSimulator:
     def __init__(self, number_of_experiments: int):
         self.number_of_experiments = number_of_experiments
@@ -114,3 +114,41 @@ class LSimulator:
         plt.xticks(bins, bins)
         plt.legend(loc='upper right')
         plt.show()
+
+    @staticmethod
+    def calculate_expected_value(data):
+        n = len(data)
+        if n == 0:
+            return 0
+        expected_value = sum(data) / n
+        return expected_value
+
+    def estimate_expected_value_and_variance(self, nodes_num: int):
+        experiment_results = []
+        for _ in range(self.number_of_experiments):
+            experiment_results.append(self.get_L_known_n(n=nodes_num))
+        # calculate expected value
+        expected_value = self.calculate_expected_value(data=experiment_results)
+        # calculate variance
+        squared_experiment_results = list(map(lambda x: x ** 2, experiment_results))
+        variance = self.calculate_expected_value(data=squared_experiment_results) - expected_value ** 2
+
+        return expected_value, variance
+
+    def calculate_success_in_first_round_prob(self, u: int):
+        n = random.randint(2, u)
+        m = math.ceil(math.log2(u))
+        successes = 0
+        for _ in range(self.number_of_experiments):
+            channel = Channel()
+            nodes = [Node(node_id=node_id, channel=channel, p_generator_ref=known_u_p_generator(nodes_num=n)) for
+                     node_id in range(n)]
+            for _ in range(m):
+                for node in nodes:
+                    node.election()
+                if channel.exists_single():
+                    break
+                channel.extend_slots()
+            if channel.exists_single():
+                successes += 1
+        return successes / self.number_of_experiments
