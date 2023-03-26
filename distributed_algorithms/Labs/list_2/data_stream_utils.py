@@ -2,6 +2,8 @@ import hashlib
 import random
 from typing import Tuple, List, Callable
 
+import matplotlib.pyplot as plt
+
 
 def get_multiplicity(multiplicity_range: int | Tuple[int, int]) -> int:
     if isinstance(multiplicity_range, int):
@@ -57,6 +59,13 @@ def define_hash(bit_length: int, hash_function_name: str) -> Callable:
             return value
 
     return TruncatedOrderedHash()
+
+
+def plot_data(data, xlabel: str, ylabel: str):
+    plt.scatter(x=[n for n in range(len(data))], y=data)
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    plt.show()
 
 
 def test():

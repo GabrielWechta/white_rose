@@ -1,14 +1,16 @@
 from data_stream_utils import define_hash, generate_multiset
-import matplotlib.pyplot as plt
 
 
 class MinCount:
-    def __init__(self, M_length, h, data_stream):
+    def __init__(self, M_length, h, data_stream=None):
         self.M_length = M_length
         self.h = h
         self.data_stream = data_stream
         self.M = [1 for _ in range(M_length)]
         # self.hashes = []
+
+    def set_data_stream(self, data_stream):
+        self.data_stream = data_stream
 
     def consume_data_stream(self):
         for s in self.data_stream:
@@ -25,13 +27,6 @@ class MinCount:
             return len(list(filter(lambda x: x != 1, self.M)))
         else:
             return (self.M_length - 1) / self.M[-1]
-
-    @staticmethod
-    def plot_data(data):
-        plt.scatter(x=[n for n in range(len(data))], y =data)
-        plt.xlabel('x')
-        plt.ylabel('y')
-        plt.show()
 
 
 def test():
