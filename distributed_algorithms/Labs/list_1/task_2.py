@@ -6,12 +6,14 @@ def main():
     # case 1: n=2
     n = 2
     l_simulator.plot_histogram(n=n, u=n)
+    u = 200
+    l_simulator.plot_histogram(n=2, u=u)
     # case 2: u=n/2
-    n = 200
-    l_simulator.plot_histogram(n=n, u=n // 2)
+    u = 200
+    l_simulator.plot_histogram(n=u // 2, u=u)
     # case 3: u=n
-    n = 200
-    l_simulator.plot_histogram(n=n, u=n)
+    u = 200
+    l_simulator.plot_histogram(n=u, u=n)
 
 
 if __name__ == "__main__":
