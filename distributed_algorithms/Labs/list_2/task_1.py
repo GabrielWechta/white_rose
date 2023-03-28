@@ -1,9 +1,16 @@
-from typing import List, Union
+import pathlib
+from typing import List, Union, Callable
 
+from PIL import Image
 from matplotlib import pyplot as plt
 
 from data_stream_utils import define_hash, generate_multiset
 from min_count_algorithm import MinCount
+
+HASH_FUNCTION_NAME = "sha256"
+HASH_BIT_LENGTH = 64
+PRESENTATION_MODE = False
+SAVE_FIGURES = True
 
 
 def plot_subtask_b(data: List[List[Union[int, float]]]):
@@ -14,31 +21,29 @@ def plot_subtask_b(data: List[List[Union[int, float]]]):
     plt.scatter(x=data[0], y=data[5], c='cyan', label='k=400', s=5)
     plt.xlabel('n')
     plt.ylabel(r'$\frac{\hat{n}}{n}$')
-    plt.title(r'$\frac{\hat{n}}{n}$ for different k values. Task 1.b.')
+    plt.title(r'$\frac{\hat{n}}{n}$ for different k values. (Task 1.b)')
     plt.legend()
+    if SAVE_FIGURES is True:
+        plt.savefig('figures/subtask_b_fig.png')
     plt.show()
 
 
-# def plot_subtask_b(data: List[List[int, float]]):
-#     data_0, data_1, data_2, data_3 = numpy.array(data[0]), numpy.array(data[1]), numpy.array(data[2]), numpy.array(
-#         data[3])
-#     plt.scatter(data_0, np.subtract(data_0, data_1), c='red', label='y1')
-#     plt.scatter(data_0, np.subtract(data_0, data_2), c='green', label='y2')
-#     plt.scatter(data_0, np.subtract(data_0, data_3), c='blue', label='y3')
-#     plt.xlabel('x')
-#     plt.ylabel('y')
-#     plt.title('Scatter Plot with 3 Variables')
-#     plt.legend()
-#     plt.show()
+def plot_subtask_c(data: List[List[Union[int, float]]]):
+    plt.scatter(x=data[0], y=data[1], c='cyan', s=5)
+    plt.xlabel('n')
+    plt.ylabel('k')
+    plt.title(r'Plotting $k$ such that $|\frac{\hat{n}}{n} - 1| < 0.1$. (Task 1.c)')
+    if SAVE_FIGURES is True:
+        plt.savefig('figures/subtask_c_fig.png')
+    plt.show()
+
 
 def subtask_a():
     # experiment parameters
     k = 100
-    bit_length = 64
-    hash_function_name = "sha256"
 
     range_start = 1
-    min_count = MinCount(M_length=k, h=define_hash(bit_length=bit_length, hash_function_name=hash_function_name))
+    min_count = MinCount(M_length=k, h=define_hash(bit_length=HASH_BIT_LENGTH, hash_function_name=HASH_FUNCTION_NAME))
     for n in range(1, 10 ** 4 + 1):
         verification_array = []
         range_end = range_start + n + 1  # S1={1}, S2={2,3}, S3={4,5,6}, ...
@@ -58,16 +63,15 @@ def subtask_a():
 
 def subtask_b():
     # experiment parameters
-    bit_length = 64
-    hash_function_name = "sha256"
     multiplicity_range = 1
 
     range_start = 1
     plot_data = [[], [], [], [], [], []]
     for dim, k in enumerate([2, 3, 10, 100, 400]):
+        print(k)
         min_count = MinCount(M_length=k,
-                             h=define_hash(bit_length=bit_length, hash_function_name=hash_function_name))
-        for n in range(1, 10 ** 3 + 1):
+                             h=define_hash(bit_length=HASH_BIT_LENGTH, hash_function_name=HASH_FUNCTION_NAME))
+        for n in range(1, 10 ** 4 + 1):
             range_end = range_start + n + 1  # S1={1}, S2={2,3}, S3={4,5,6}, ...
             data_stream = generate_multiset(elements_range=(range_start, range_end),
                                             multiplicity_range=multiplicity_range)
@@ -80,5 +84,49 @@ def subtask_b():
     plot_subtask_b(data=plot_data)
 
 
+def get_in_bands_percent(data, distance=0.1):
+    count = len(list(filter(lambda x: abs(x - 1) < distance, data)))
+    return count / len(data)
+
+
+def subtask_c():
+    def get_n_hat():
+        min_count = MinCount(M_length=k,
+                             h=define_hash(bit_length=HASH_BIT_LENGTH, hash_function_name=HASH_FUNCTION_NAME))
+        min_count.set_data_stream(data_stream=data_stream)
+        min_count.consume_data_stream()
+        n_hat_inside = min_count.estimate_number_of_elements()
+        return n_hat_inside
+
+    # experiment parameters
+    k = 1
+    range_start = 1
+    exp_result = []
+    plot_data = [[], []]
+    for n in range(1, 10 ** 4 + 1):
+        print(n)
+        range_end = range_start + n  # S1={1}, S2={2,3}, S3={4,5,6}, ...
+        data_stream = generate_multiset(elements_range=(range_start, range_end), multiplicity_range=1)
+        n_hat = get_n_hat()
+        exp_result.append(n_hat / n)
+        while get_in_bands_percent(data=exp_result) < 0.95:
+            k += 1
+            n_hat = get_n_hat()
+            exp_result[-1] = (n_hat / n)
+
+        plot_data[0].append(n)
+        plot_data[1].append(k)
+        range_start = range_end
+    plot_subtask_c(data=plot_data)
+
+
+def present(subtask: Callable, path_to_fig: pathlib.Path):
+    if PRESENTATION_MODE is True:
+        img = Image.open(str(path_to_fig))
+        img.show()
+    else:
+        subtask()
+
+
 if __name__ == "__main__":
-    subtask_b()
+    present(subtask=subtask_c, path_to_fig=pathlib.Path("figures/subtask_c_fig.png"))

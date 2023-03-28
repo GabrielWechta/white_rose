@@ -32,15 +32,26 @@ def generate_multiset(elements_range: int | Tuple[int, int], multiplicity_range:
     return multiset
 
 
+class BadHash:
+    def __init__(self, data):
+        self.data = data
+
+    def hexdigest(self):
+        hash_value = 0
+        for byte in self.data:
+            hash_value += byte
+            hash_value = hash_value % 2 ** 256
+        hash_value += 2 ** 8
+        return format(hash_value, '32x')
+
+
 HASH_FUNCTIONS_DICT = {
     "sha1": hashlib.sha1,
-    "sha224": hashlib.sha224,
     "sha256": hashlib.sha256,
-    "sha384": hashlib.sha384,
     "sha512": hashlib.sha512,
     "blake2b": hashlib.blake2b,
-    "blake2s": hashlib.blake2s,
-    "md5": hashlib.md5
+    "md5": hashlib.md5,
+    "bad_hash": BadHash
 }
 
 
