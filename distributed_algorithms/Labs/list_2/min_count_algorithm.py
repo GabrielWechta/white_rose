@@ -9,8 +9,16 @@ class MinCount:
         self.M = [1 for _ in range(M_length)]
         # self.hashes = []
 
-    def set_data_stream(self, data_stream):
+    def replace_data_stream(self, data_stream):
         self.data_stream = data_stream
+        self.__refresh_M()
+
+    def replace_M_length(self, M_length):
+        self.M_length = M_length
+        self.__refresh_M()
+
+    def __refresh_M(self):
+        self.M = [1 for _ in range(self.M_length)]
 
     def consume_data_stream(self):
         for s in self.data_stream:

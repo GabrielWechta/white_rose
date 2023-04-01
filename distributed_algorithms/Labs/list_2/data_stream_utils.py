@@ -15,7 +15,24 @@ def get_multiplicity(multiplicity_range: int | Tuple[int, int]) -> int:
     return multiplicity
 
 
-def generate_multiset(elements_range: int | Tuple[int, int], multiplicity_range: int | Tuple[int, int]) -> List[int]:
+def get_in_bands_percent(data, distance=0.1):
+    if len(data) == 0:
+        return False
+    count = len(list(filter(lambda x: abs(x - 1) < distance, data)))
+    return count / len(data)
+
+
+def check_margin(data, delta):
+    counter = 0
+    for value in data:
+        if 1 - delta <= value <= 1 + delta:
+            counter += 1
+    print(f"{counter/len(data)=}")
+    return counter / len(data)
+
+
+def generate_multiset(elements_range: int | Tuple[int, int], multiplicity_range: int | Tuple[int, int] = 1) -> List[
+    int]:
     multiset = []
     if isinstance(elements_range, int):
         for element in range(elements_range):
@@ -30,6 +47,14 @@ def generate_multiset(elements_range: int | Tuple[int, int], multiplicity_range:
         raise TypeError("Expected int or tuple of 2 ints")
     random.shuffle(multiset)
     return multiset
+
+
+def disjoint_ranges_generator(upper_bound=10 ** 4 + 1):
+    range_start = 1
+    for n in range(1, upper_bound):
+        range_end = range_start + n  # S1={1}, S2={2,3}, S3={4,5,6}, ...
+        yield n, range_start, range_end
+        range_start = range_end
 
 
 class BadHash:
@@ -48,7 +73,6 @@ class BadHash:
 HASH_FUNCTIONS_DICT = {
     "sha1": hashlib.sha1,
     "sha256": hashlib.sha256,
-    "sha512": hashlib.sha512,
     "blake2b": hashlib.blake2b,
     "md5": hashlib.md5,
     "bad_hash": BadHash
@@ -95,9 +119,17 @@ def test():
     print(multiset)
 
 
+def test_2():
+    for n, range_start, range_end in disjoint_ranges_generator(100):
+        print(n)
+        print(generate_multiset(elements_range=(range_start, range_end)))
+
+
 def main():
     ...
 
 
 if __name__ == "__main__":
-    test()
+    test_2()
+
+# %%
