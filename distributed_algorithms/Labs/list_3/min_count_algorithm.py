@@ -1,24 +1,23 @@
 from data_stream_utils import define_hash, generate_multiset
+from counting_algorithm_interface import CountingAlgorithmInterface
 
-
-class MinCount:
+class MinCount(CountingAlgorithmInterface):
     def __init__(self, M_length, h, data_stream=None):
         self.M_length = M_length
         self.h = h
         self.data_stream = data_stream
         self.M = [1 for _ in range(M_length)]
-        # self.hashes = []
+
+    def refresh_M(self):
+        self.M = [1 for _ in range(self.M_length)]
 
     def replace_data_stream(self, data_stream):
         self.data_stream = data_stream
-        self.__refresh_M()
+        self.refresh_M()
 
     def replace_M_length(self, M_length):
         self.M_length = M_length
-        self.__refresh_M()
-
-    def __refresh_M(self):
-        self.M = [1 for _ in range(self.M_length)]
+        self.refresh_M()
 
     def consume_data_stream(self):
         for s in self.data_stream:

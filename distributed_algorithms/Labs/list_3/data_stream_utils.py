@@ -1,6 +1,6 @@
 import hashlib
 import random
-from typing import Tuple, List, Callable
+from typing import Tuple, List, Callable, Literal
 
 import matplotlib.pyplot as plt
 
@@ -79,21 +79,35 @@ HASH_FUNCTIONS_DICT = {
 }
 
 
-def define_hash(bit_length: int, hash_function_name: str) -> Callable:
+def define_hash(bit_length: int, hash_function_name: str,
+                return_type: Literal["truncated_normalized_hash", "truncated_hash"]) -> Callable:
     hash_function = HASH_FUNCTIONS_DICT[hash_function_name]
 
-    class TruncatedOrderedHash:
-        def __call__(self, data: bytes):
-            hash_value = hash_function(data).hexdigest()
-            # Convert hash value to binary string
-            binary_string = bin(int(hash_value, 16))[3:]
-            # Subtract 8 digits from the end of the binary string
-            binary_string_cut = binary_string[:bit_length]
-            # Convert binary string to float between 0 and 1
-            value = int(binary_string_cut, 2) / (2 ** (len(binary_string_cut)))
-            return value
+    if return_type == "truncated_normalized_hash":
+        class TruncatedNormalizedHash:
+            def __call__(self, data: bytes):
+                hash_value = hash_function(data).hexdigest()
+                # Convert hash value to binary string
+                binary_string = bin(int(hash_value, 16))[3:]
+                # Subtract 8 digits from the end of the binary string
+                binary_string_cut = binary_string[:bit_length]
+                # Convert binary string to float between 0 and 1
+                value = int(binary_string_cut, 2) / (2 ** (len(binary_string_cut)))
+                return value
 
-    return TruncatedOrderedHash()
+        return TruncatedNormalizedHash()
+    elif return_type == "truncated_hash":
+        class TruncatedHash:
+            def __call__(self, data: bytes):
+                hash_value = hash_function(data).hexdigest()
+                binary_string = bin(int(hash_value, 16))[3:]
+                binary_string_cut = binary_string[:bit_length]
+                return binary_string_cut
+
+        return TruncatedHash()
+
+    else:
+        raise ValueError(f"Unknown argument {return_type=}")
 
 
 def plot_data(data, xlabel: str, ylabel: str):

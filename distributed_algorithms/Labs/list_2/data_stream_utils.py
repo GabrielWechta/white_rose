@@ -1,6 +1,6 @@
 import hashlib
 import random
-from typing import Tuple, List, Callable
+from typing import Tuple, List, Callable, Literal
 
 import matplotlib.pyplot as plt
 
