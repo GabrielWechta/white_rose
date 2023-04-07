@@ -80,7 +80,8 @@ HASH_FUNCTIONS_DICT = {
 
 
 def define_hash(bit_length: int, hash_function_name: str,
-                return_type: Literal["truncated_normalized_hash", "truncated_hash"]) -> Callable:
+                return_type: Literal[
+                    "truncated_normalized_hash", "truncated_hash"] = "truncated_normalized_hash") -> Callable:
     hash_function = HASH_FUNCTIONS_DICT[hash_function_name]
 
     if return_type == "truncated_normalized_hash":
