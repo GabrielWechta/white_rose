@@ -1,0 +1,6 @@
+For n=1, max_steps=0
+For n=2, max_steps=0
+For n=3, max_steps=2
+For n=4, max_steps=13
+For n=5, max_steps=24
+Finished in 8.311551809310913 seconds
