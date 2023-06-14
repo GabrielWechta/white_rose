@@ -11,27 +11,35 @@ class MaximalIndependentSetAlgorithm:
         self.mis = set()
 
     def accepted(self, v: int):
+        """In MIS and not `blocked`."""
         return v in self.mis and not self.blocked(v)
 
     def blocked(self, v: int):
+        """There is a neighbour in graph for v."""
         return any(neighbor in self.mis for neighbor in self.graph[v])
 
     def candidate(self, v: int):
+        """Not in MIS and not `blocked`."""
         return v not in self.mis and not self.blocked(v)
 
     def invalid(self, v: int):
+        """In MIS and `blocked`."""
         return v in self.mis and self.blocked(v)
 
     def rejected(self, v: int):
+        """Not in MIS and `blocked`."""
         return v not in self.mis and self.blocked(v)
 
     def valid(self, v: int):
+        """v has been `accepted` or `rejected`."""
         return self.accepted(v) or self.rejected(v)
 
     def valid_mis(self):
+        """All vertices in MIS are valid."""
         return all(self.valid(v) for v in self.graph.nodes)
 
     def moves_generator(self):
+        """Token ring access simulation."""
         configuration = tuple(0 for _ in range(self.nodes_num))
         while True:
             moves = []
